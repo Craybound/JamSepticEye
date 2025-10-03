@@ -849,6 +849,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _waves:
   - {fileID: 11400000, guid: f43709b5032f3e24cbb6d0851c978476, type: 2}
+  - {fileID: 11400000, guid: 0eb22a01551ff7c4d93ac019afa788e1, type: 2}
+  - {fileID: 11400000, guid: 2d5180ae47c957a40a1082e8254c03a6, type: 2}
   _spawnPoints:
   - {fileID: 1115546017}
   - {fileID: 1453166935}
@@ -1994,6 +1996,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 1775461383}
   - {fileID: 1642435402}
-  - {fileID: 1933044836}
   - {fileID: 943606131}
   - {fileID: 515983036}
+  - {fileID: 1933044836}

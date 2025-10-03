@@ -9,9 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c51aaee68b16bdd40bc9b812e51153e0, type: 3}
-  m_Name: Wave_0
+  m_Script: {fileID: 11500000, guid: 30ef62b6bb089214baf6c3d4f7793c93, type: 3}
+  m_Name: Enemy_Walker
   m_EditorClassIdentifier: 
-  Enemies:
-  - Config: {fileID: 11400000, guid: fceefe6f86cca074e802fee909d60b20, type: 2}
-    Count: 5
+  Prefab: {fileID: 6785743165886791569, guid: 41a7ce9b2963b85478f8420a72e42a43, type: 3}
+  Stats:
+    MaxHealth: 10
+    MoveSpeed: 0.04
+    Damage: 1
+    SoulDrop: 1

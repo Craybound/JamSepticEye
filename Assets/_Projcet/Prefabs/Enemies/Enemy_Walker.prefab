@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8968924624632133252}
   - component: {fileID: 235224270244513694}
   - component: {fileID: 186545690287079185}
-  - component: {fileID: 4455395022453574521}
+  - component: {fileID: 6303420096332679893}
   m_Layer: 0
   m_Name: Enemy_Walker
   m_TagString: Untagged
@@ -111,7 +111,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4455395022453574521
+--- !u!114 &6303420096332679893
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,7 +120,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6785743165886791569}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c16b2a964a3d26408372e7d9ffd24a5, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e3aa546eff8b8448977cb17dffdd2b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 0.01
+  _baseStats:
+    MaxHealth: 0
+    MoveSpeed: 0.05
+    Damage: 0
+    SoulDrop: 0
