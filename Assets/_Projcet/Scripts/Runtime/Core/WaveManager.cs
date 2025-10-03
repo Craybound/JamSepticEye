@@ -29,12 +29,28 @@ public class WaveManager : MonoBehaviour
     [InfoBox("Defines the sequence of waves. Each WaveConfig contains enemy spawns.")]
     [Tooltip("If true, waits for manual input (debug/test) instead of auto-starting.")]
     [SerializeField] private bool WaitForInput = true;
+    
+    [Tooltip("Delay in seconds between clearing one wave and spawning the next.")]
+    [SerializeField, Range(0f, 30f)]
+    private float _waveCooldown = 5f;
+
+    [ShowInInspector, ReadOnly, FoldoutGroup("Runtime State")]
+    [LabelText("Cooldown Timer")]
+    private float _cooldownTimer;
+
+
 
     [SerializeField] private List<WaveConfig> _waves = new();
 
     [Title("Spawn Settings")]
     [InfoBox("Points in the scene where enemies can spawn. One is chosen at random.")]
     [SerializeField] private List<Transform> _spawnPoints = new();
+   
+
+
+
+    
+    
     #endregion
 
     #region Scaling Settings
@@ -236,9 +252,28 @@ public class WaveManager : MonoBehaviour
         if (_activeEnemies.Count == 0)
         {
             Debug.Log($"[WaveManager] Wave #{_currentWave} cleared!");
-            StartNextWave();
+            StartCoroutine(WaveCooldownRoutine());
         }
     }
+
+    private IEnumerator WaveCooldownRoutine()
+    {
+        _cooldownTimer = _waveCooldown;
+
+        // Countdown
+        while (_cooldownTimer > 0f)
+        {
+            //Update UI here
+            yield return null;
+            _cooldownTimer -= Time.deltaTime;
+        }
+
+        // Start next wave once timer reaches 0
+        StartNextWave();
+    }
+
+
+
     #endregion
 
     #region Scaling Formula
