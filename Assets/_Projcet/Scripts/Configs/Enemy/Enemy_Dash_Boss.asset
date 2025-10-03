@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30ef62b6bb089214baf6c3d4f7793c93, type: 3}
-  m_Name: Enemy_Walker
+  m_Name: Enemy_Dash_Boss
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 6785743165886791569, guid: 41a7ce9b2963b85478f8420a72e42a43, type: 3}
+  Prefab: {fileID: 8717202583660495619, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
   Stats:
-    MaxHealth: 50
-    Damage: 10
-    MoveSpeed: 0.04
-    SoulDrop: 1
+    MaxHealth: 100
+    Damage: 25
+    MoveSpeed: 0.02
+    SoulDrop: 10

@@ -1,5 +1,7 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UnityEngine.InputSystem;
+using System;
 
 public class EnemyController : MonoBehaviour
 {
@@ -45,6 +47,22 @@ public class EnemyController : MonoBehaviour
     private int _currentHealth;
     #endregion
 
+
+    public static event Action<GameObject> OnEnemyDeath;
+    #region Unity Life Cycle
+
+    private GameObject _player;
+    private void Awake()
+    {
+        _player = GameObject.FindWithTag("Player");
+    }
+
+    private void Update()
+    {
+        Move();
+    }
+    #endregion
+
     #region Initialization
     /// <summary>
     /// Must be called from WaveManager with pre-scaled stats.
@@ -59,6 +77,18 @@ public class EnemyController : MonoBehaviour
     }
     #endregion
 
+    #region Movement
+
+    private void Move()
+    {
+        transform.LookAt(new Vector3(_player.transform.position.x, 0, _player.transform.position.z));
+        transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, MoveSpeed);
+    }
+
+
+
+    #endregion
+
     #region Combat
     public void TakeDamage(int amount)
     {
@@ -69,6 +99,7 @@ public class EnemyController : MonoBehaviour
     private void Die()
     {
         Debug.Log($"{name} died and dropped {_runtimeStats.SoulDrop} souls.");
+        OnEnemyDeath?.Invoke(gameObject);
         Destroy(gameObject);
     }
     #endregion
