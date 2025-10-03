@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Bson;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ public class WaveManager : MonoBehaviour
     #region Wave & Spawn Settings
     [Title("Wave Settings")]
     [InfoBox("Defines the sequence of waves. Each WaveConfig contains enemy spawns.")]
+    [SerializeField] private bool WaitForInput;
     [SerializeField] private List<WaveConfig> _waves = new();
 
     [Title("Spawn Settings")]
@@ -76,18 +78,40 @@ public class WaveManager : MonoBehaviour
     [LabelText("Elapsed Time (s)")] private float _currentTime;
     #endregion
 
+    #region Events
+
+    private void OnEnable()
+    {
+        EnemyController.OnEnemyDeath += RemoveEnemy;
+    }
+
+    private void OnDisable()
+    {
+        EnemyController.OnEnemyDeath -= RemoveEnemy;
+    }
+
+    #endregion
+
+
     #region Unity Lifecycle
     private void Start()
     {
         _currentWave = 0;
         _currentTime = 0;
         Debug.Log("[WaveManager] Ready. Press debug buttons or call StartNextWave().");
+
+        if (!WaitForInput)
+        {
+            StartNextWave();
+        }
+
+
     }
 
     private void Update()
     {
         _currentTime += Time.deltaTime;
-
+        
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.N)) StartNextWave();
         if (Input.GetKeyDown(KeyCode.C)) ForceClearEnemies();
@@ -105,36 +129,58 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        var config = _waves[_currentWave];
-        Debug.Log($"[WaveManager] Starting Wave #{_currentWave + 1}: {config.name}");
-
-        foreach (var spawn in config.Enemies)
+        if (_activeEnemies.Count == 0)
         {
-            for (int i = 0; i < spawn.Count; i++)
+            var config = _waves[_currentWave];
+            Debug.Log($"[WaveManager] Starting Wave #{_currentWave + 1}: {config.name}");
+
+            foreach (var spawn in config.Enemies)
             {
-                var enemyGO = Instantiate(spawn.Config.Prefab, GetSpawnPoint(), Quaternion.identity);
-                var enemy = enemyGO.GetComponent<EnemyController>();
-
-                if (enemy != null)
+                for (int i = 0; i < spawn.Count; i++)
                 {
-                    var scaledStats = ScaleStats(spawn.Config.Stats, _currentWave, _currentTime);
-                    enemy.Initialize(scaledStats,
-                        1f + (_currentWave * _healthPerWave) + (_currentTime / 60f * _healthPerMinute),
-                        1f + (_currentWave * _damagePerWave) + (_currentTime / 60f * _damagePerMinute));
-                }
+                    var enemyGO = Instantiate(spawn.Config.Prefab, GetSpawnPoint(), Quaternion.identity);
+                    var enemy = enemyGO.GetComponent<EnemyController>();
 
-                _activeEnemies.Add(enemyGO);
+                    if (enemy != null)
+                    {
+                        var scaledStats = ScaleStats(spawn.Config.Stats, _currentWave, _currentTime);
+                        enemy.Initialize(scaledStats,
+                            1f + (_currentWave * _healthPerWave) + (_currentTime / 60f * _healthPerMinute),
+                            1f + (_currentWave * _damagePerWave) + (_currentTime / 60f * _damagePerMinute));
+                    }
+
+                    _activeEnemies.Add(enemyGO);
+                }
             }
+
+            _currentWave++;
+        }
+        else
+        {
+            Debug.LogWarning($"[Wave Manager] You must clear the wave before to spawn a new wave. Enemies Remaining {_activeEnemies.Count}");
         }
 
-        _currentWave++;
+
     }
+
+    public void RemoveEnemy(GameObject enemy)
+    {
+        if (_activeEnemies.Contains(enemy))
+        {
+            _activeEnemies.Remove(enemy);
+        }
+        WaveCleared();
+    }
+
 
     [Button(ButtonSizes.Medium), GUIColor(1f, 0.6f, 0.6f)]
     private void WaveCleared()
     {
-        Debug.Log($"[WaveManager] Wave #{_currentWave} cleared!");
-        StartNextWave();
+        if (_activeEnemies.Count == 0 )
+        {
+            Debug.Log($"[WaveManager] Wave #{_currentWave} cleared!");
+            StartNextWave();
+        }
     }
 
     private EnemyStats ScaleStats(EnemyStats baseStats, int waveNumber, float timeAlive)
@@ -164,7 +210,7 @@ public class WaveManager : MonoBehaviour
             _activeEnemies.Clear();
             Debug.Log("[WaveManager] Enemies cleared manually.");
         }
-        else
+        else 
         {
             WaveCleared();
         }
