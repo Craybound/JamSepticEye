@@ -66,16 +66,23 @@ public class WaveManager : MonoBehaviour
 
     #region Runtime State
     [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly, LabelText("Current Wave")]
-    private int _currentWave = 0;
+    public int _currentWave = 0;
 
     [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly, LabelText("Active Enemies")]
-    private readonly List<GameObject> _activeEnemies = new();
+    public readonly List<GameObject> _activeEnemies = new();
 
     [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly, LabelText("Elapsed Time (s)")]
     private float _currentTime;
     #endregion
 
+
+
+
     #region Events
+
+    public static event Action OnNewWave;
+
+
     private void OnEnable() => EnemyController.OnEnemyDeath += RemoveEnemy;
     private void OnDisable() => EnemyController.OnEnemyDeath -= RemoveEnemy;
     #endregion
@@ -125,6 +132,7 @@ public class WaveManager : MonoBehaviour
             SpawnWave(wave);
 
         _currentWave++;
+        OnNewWave?.Invoke();
     }
 
     private void SpawnWave(WaveConfig config)
