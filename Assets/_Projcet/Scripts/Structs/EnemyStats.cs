@@ -4,7 +4,7 @@ using System;
 public struct EnemyStats
 {
     public int MaxHealth;
-    public float MoveSpeed;
     public int Damage;
+    public float MoveSpeed;
     public int SoulDrop;
 }
