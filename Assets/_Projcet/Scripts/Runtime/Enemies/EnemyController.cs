@@ -2,6 +2,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using UnityEngine.InputSystem;
 using System;
+using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
@@ -38,8 +39,37 @@ public class EnemyController : MonoBehaviour
     [BoxGroup("Runtime HUD/Debug")]
     [ShowInInspector, ReadOnly, GUIColor(1f, 0.9f, 0.4f)]
     public float DamageMultiplier { get; private set; } = 1f;
-
+    
     private Color HealthBarColor => Color.Lerp(Color.red, Color.green, (float)_currentHealth / Mathf.Max(1, MaxHealth));
+    #endregion
+
+    #region Movement Vars
+    [Title("Movement Variables")]
+    [InfoBox("These values are for tracking movement.")]
+
+    [BoxGroup("Movement Variables/Transform")]
+    [ShowInInspector, ReadOnly]
+    public Transform target; // target var for object targeting
+
+    [BoxGroup("Movement Variables/Transform")]
+    [ShowInInspector, ReadOnly]
+    public Vector3 targetOffset = new Vector3(.5f, 0f, .5f); // offset for object targeting
+
+    [BoxGroup("Movement Variables/Transform")]
+    [ShowInInspector, ReadOnly]
+    private NavMeshAgent agent; // NavMeshAgent var for movement
+
+    [BoxGroup("Movement Variables/Transform")]
+    [ShowInInspector]
+    public float attackRange = 2f; // Attack range
+
+    [BoxGroup("Movement Variables/Transform")]
+    [ShowInInspector]
+    public float attackSpeed = 1f; // Generic attck speed / higher number means slower attack speed
+
+    [BoxGroup("Movement Variables/Transform")]
+    [ShowInInspector]
+    public float attackTimer = 1f; // Timer for next attack
     #endregion
 
     #region Private State
@@ -47,6 +77,12 @@ public class EnemyController : MonoBehaviour
     private int _currentHealth;
     #endregion
 
+    private void Start()
+    {
+        SetTarget();
+        agent = GetComponent<NavMeshAgent>(); // sets the agent var to the NavMeshAgent component
+        agent.speed = MoveSpeed;
+    }
 
     public static event Action<GameObject> OnEnemyDeath;
     #region Unity Life Cycle
@@ -81,11 +117,31 @@ public class EnemyController : MonoBehaviour
 
     private void Move()
     {
-        transform.LookAt(new Vector3(_player.transform.position.x, 0, _player.transform.position.z));
-        transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, MoveSpeed);
+        if (target != null && Vector3.Distance(transform.position, target.position) >= attackRange)
+        {
+            agent.SetDestination(target.position); // sets the target to the player's position
+        }
+        else if (target != null && Vector3.Distance(transform.position, target.position) <= attackRange)
+        {
+            Attack();
+        }
     }
 
-
+    private void SetTarget()
+    {
+        if (target == null)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player"); // finds the player via tag
+            if (playerObject != null)
+            {
+                target = playerObject.transform; // sets player target to the previously found player tag
+            }
+            else
+            {
+                Debug.LogWarning("Player target not assigned and no object with 'Player' tag found.");
+            }
+        }
+    }
 
     #endregion
 
@@ -94,6 +150,15 @@ public class EnemyController : MonoBehaviour
     {
         _currentHealth -= amount;
         if (_currentHealth <= 0) Die();
+    }
+
+    private void Attack()
+    {
+        if (Time.time > attackTimer)
+        {
+            Debug.Log(this.name + " has attacked you!");
+            attackTimer = Time.time + attackSpeed;
+        }
     }
 
     private void Die()
