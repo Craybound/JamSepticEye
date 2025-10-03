@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85acf9785ab72e74d8fe6e50958ac160, type: 3}
+  m_Name: Elite Dasher Ability
+  m_EditorClassIdentifier: 
+  AbilityName: 
+  meleeDamage: 10
+  meleeRange: 1.5
+  meleeCooldown: 1
+  dashDistance: 5
+  dashSpeed: 20
+  dashCooldown: 2
+  maxDashCharges: 1000
+  iframeDuration: 0.25
