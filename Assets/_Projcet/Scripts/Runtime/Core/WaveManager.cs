@@ -13,7 +13,7 @@ public class WaveManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); // Prevent duplicates
+            Destroy(gameObject);
             return;
         }
 
@@ -23,7 +23,7 @@ public class WaveManager : MonoBehaviour
     }
     #endregion
 
-    #region Serialized Fields
+    #region Wave & Spawn Settings
     [Title("Wave Settings")]
     [InfoBox("Defines the sequence of waves. Each WaveConfig contains enemy spawns.")]
     [SerializeField] private List<WaveConfig> _waves = new();
@@ -33,14 +33,46 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private List<Transform> _spawnPoints = new();
     #endregion
 
-    #region Private Fields
-    [ShowInInspector, ReadOnly, FoldoutGroup("Runtime State")]
+    #region Scaling Settings
+    [TitleGroup("Scaling Settings", Alignment = TitleAlignments.Centered)]
+    [InfoBox("These values define how enemy stats scale as waves progress or as time passes.\n" +
+             "Designers: tweak here to adjust difficulty curve.")]
+
+    [HorizontalGroup("Scaling Settings/Split", Width = 120)]
+    [VerticalGroup("Scaling Settings/Split/Left")]
+    [LabelText("Time Scale (sec/unit)"), Range(1f, 120f)]
+    [GUIColor(0.6f, 0.8f, 1f)]
+    [SerializeField] private float _timeScale = 30f;
+
+    [VerticalGroup("Scaling Settings/Split/Right")]
+    [LabelText("Damage Growth (per wave)"), Range(0f, 0.5f)]
+    [GUIColor(1f, 0.7f, 0.2f)]
+    [SerializeField] private float _damagePerWave = 0.1f;
+
+    [VerticalGroup("Scaling Settings/Split/Right")]
+    [LabelText("Health Growth (per wave)"), Range(0f, 0.5f)]
+    [GUIColor(0.6f, 1f, 0.6f)]
+    [SerializeField] private float _healthPerWave = 0.15f;
+
+    [VerticalGroup("Scaling Settings/Split/Right")]
+    [LabelText("Damage Growth (per min)"), Range(0f, 0.5f)]
+    [GUIColor(1f, 0.9f, 0.4f)]
+    [SerializeField] private float _damagePerMinute = 0.05f;
+
+    [VerticalGroup("Scaling Settings/Split/Right")]
+    [LabelText("Health Growth (per min)"), Range(0f, 0.5f)]
+    [GUIColor(0.9f, 1f, 0.4f)]
+    [SerializeField] private float _healthPerMinute = 0.05f;
+    #endregion
+
+    #region Runtime State
+    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly]
     [LabelText("Current Wave")] private int _currentWave = 0;
 
-    [ShowInInspector, ReadOnly, FoldoutGroup("Runtime State")]
+    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly]
     [LabelText("Active Enemies")] private readonly List<GameObject> _activeEnemies = new();
 
-    [ShowInInspector, ReadOnly, FoldoutGroup("Runtime State")]
+    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly]
     [LabelText("Elapsed Time (s)")] private float _currentTime;
     #endregion
 
@@ -57,7 +89,6 @@ public class WaveManager : MonoBehaviour
         _currentTime += Time.deltaTime;
 
 #if UNITY_EDITOR
-        // Debug Hotkeys
         if (Input.GetKeyDown(KeyCode.N)) StartNextWave();
         if (Input.GetKeyDown(KeyCode.C)) ForceClearEnemies();
 #endif
@@ -65,9 +96,6 @@ public class WaveManager : MonoBehaviour
     #endregion
 
     #region Wave Logic
-    /// <summary>
-    /// Spawns the next wave of enemies from the config list.
-    /// </summary>
     [Button(ButtonSizes.Medium), GUIColor(0.6f, 1f, 0.6f)]
     private void StartNextWave()
     {
@@ -89,9 +117,10 @@ public class WaveManager : MonoBehaviour
 
                 if (enemy != null)
                 {
-                    // Apply scaling here if needed before Initialize()
                     var scaledStats = ScaleStats(spawn.Config.Stats, _currentWave, _currentTime);
-                    enemy.Initialize(scaledStats);
+                    enemy.Initialize(scaledStats,
+                        1f + (_currentWave * _healthPerWave) + (_currentTime / 60f * _healthPerMinute),
+                        1f + (_currentWave * _damagePerWave) + (_currentTime / 60f * _damagePerMinute));
                 }
 
                 _activeEnemies.Add(enemyGO);
@@ -105,38 +134,33 @@ public class WaveManager : MonoBehaviour
     private void WaveCleared()
     {
         Debug.Log($"[WaveManager] Wave #{_currentWave} cleared!");
-        StartNextWave(); // Optional: could delay or trigger UI prompt instead
+        StartNextWave();
     }
 
-    /// <summary>
-    /// Example difficulty scaling function (linear).
-    /// Designers can tune growth rates here.
-    /// </summary>
     private EnemyStats ScaleStats(EnemyStats baseStats, int waveNumber, float timeAlive)
     {
-        float damageMultiplier = 1f + (waveNumber * 0.1f) + (timeAlive / 300f);
-        float healthMultiplier = 1f + (waveNumber * 0.15f) + (timeAlive / 300f);
+        float healthMult = 1f + (waveNumber * _healthPerWave) + ((timeAlive / 60f) * _healthPerMinute);
+        float damageMult = 1f + (waveNumber * _damagePerWave) + ((timeAlive / 60f) * _damagePerMinute);
 
         return new EnemyStats
         {
-            MaxHealth = Mathf.RoundToInt(baseStats.MaxHealth * healthMultiplier),
-            Damage = Mathf.RoundToInt(baseStats.Damage * damageMultiplier),
+            MaxHealth = Mathf.RoundToInt(baseStats.MaxHealth * healthMult),
+            Damage = Mathf.RoundToInt(baseStats.Damage * damageMult),
             MoveSpeed = baseStats.MoveSpeed,
             SoulDrop = baseStats.SoulDrop
         };
     }
     #endregion
 
-    #region Debug Helpers
+    #region Debug Tools
     [Button(ButtonSizes.Medium), GUIColor(1f, 0.9f, 0.4f)]
     private void ForceClearEnemies()
     {
         if (_activeEnemies.Count > 0)
         {
             foreach (var go in _activeEnemies)
-            {
                 if (go != null) Destroy(go);
-            }
+
             _activeEnemies.Clear();
             Debug.Log("[WaveManager] Enemies cleared manually.");
         }
@@ -158,6 +182,16 @@ public class WaveManager : MonoBehaviour
         _currentWave = waveNumber;
         Debug.Log($"[WaveManager] Skipped to Wave #{_currentWave + 1}.");
         StartNextWave();
+    }
+
+    [Button(ButtonSizes.Medium), GUIColor(0.9f, 0.7f, 1f)]
+    private void PreviewScaling(int waveNumber, float timeMinutes = 0)
+    {
+        var baseStats = _waves[0].Enemies[0].Config.Stats;
+        var preview = ScaleStats(baseStats, waveNumber, timeMinutes * 60f);
+
+        Debug.Log($"[WaveManager] Preview Wave {waveNumber} at {timeMinutes} min -> " +
+                  $"HP {preview.MaxHealth}, Damage {preview.Damage}");
     }
     #endregion
 
