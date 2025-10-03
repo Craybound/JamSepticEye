@@ -2,7 +2,6 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class WaveManager : MonoBehaviour
 {
@@ -25,17 +24,6 @@ public class WaveManager : MonoBehaviour
     }
     #endregion
 
-    #region Events
-    public static event Action OnWaveClear;
-
-    private void OnEnable()
-    {
-    }
-
-    private void OnDisable()
-    {
-    }
-    #endregion
 
     #region Serialized Fields
     [Header("Wave Settings")]
@@ -49,7 +37,6 @@ public class WaveManager : MonoBehaviour
     private int _currentWave = 0;
     [ShowInInspector] private readonly List<GameObject> _activeEnemies = new();
     private float _currentTime;
-    private bool _isNewWave;
     #endregion
 
     #region Unity Lifecycle
@@ -117,13 +104,11 @@ public class WaveManager : MonoBehaviour
         }
   
         _currentWave++;
-        _isNewWave = false;
     }
 
     private void WaveCleared()
     {
         Debug.Log($"[WaveManager] Wave #{_currentWave} cleared!");
-        OnWaveClear?.Invoke();
         StartNextWave();
         // TODO: Add delay or UI prompt before next wave
     }
