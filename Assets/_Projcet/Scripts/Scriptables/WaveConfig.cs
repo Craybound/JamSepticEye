@@ -10,6 +10,6 @@ public class WaveConfig : ScriptableObject
 [System.Serializable]
 public struct EnemySpawnData
 {
-    public GameObject Prefab;
+    public EnemyConfig Config;
     public int Count;
 }

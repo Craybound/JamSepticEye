@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,12 +30,10 @@ public class WaveManager : MonoBehaviour
 
     private void OnEnable()
     {
-        OnWaveClear += WaveCleared;
     }
 
     private void OnDisable()
     {
-        OnWaveClear -= WaveCleared;     // was += by mistake
     }
     #endregion
 
@@ -48,7 +47,7 @@ public class WaveManager : MonoBehaviour
 
     #region Private Fields
     private int _currentWave = 0;
-    private readonly List<GameObject> _activeEnemies = new();
+    [ShowInInspector] private readonly List<GameObject> _activeEnemies = new();
     private float _currentTime;
     private bool _isNewWave;
     #endregion
@@ -62,24 +61,34 @@ public class WaveManager : MonoBehaviour
 
     private void Update()
     {
-        // Check if wave is clear
-        _activeEnemies.RemoveAll(e => e == null);
-        if (_activeEnemies.Count == 0 && !_isNewWave && _currentWave > 0)
-        {
-            _isNewWave = true;
-            OnWaveClear?.Invoke();
-        }
 
+        //Input for Testing
         if (Input.GetKeyDown(KeyCode.N))
         {
             StartNextWave();
         }
-
-
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (_activeEnemies.Count > 0)
+            {
+                foreach (GameObject go in _activeEnemies)
+                {
+                    if (go != null) Destroy(go);
+                }
+            }
+            else
+            {
+                WaveCleared();
+            }
+        }
     }
+
     #endregion
 
     #region Wave Logic
+    /// <summary>
+    /// Spawning logic for each wave
+    /// </summary>
     private void StartNextWave()
     {
         if (_currentWave >= _waves.Count)
@@ -88,18 +97,25 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[WaveManager] Starting Wave #{_currentWave + 1}: {_waves[_currentWave].name}");
-
         var config = _waves[_currentWave];
+        Debug.Log($"[WaveManager] Starting Wave #{_currentWave + 1}: {config.name}");
 
         foreach (var spawn in config.Enemies)
         {
             for (int i = 0; i < spawn.Count; i++)
             {
-                var enemy = Instantiate(spawn.Prefab, GetSpawnPoint(), Quaternion.identity);
-                _activeEnemies.Add(enemy);
+                var enemyGO = Instantiate(spawn.Config.Prefab, GetSpawnPoint(), Quaternion.identity);
+                var enemy = enemyGO.GetComponent<EnemyController>();
+                if (enemy != null)
+                {
+                    enemy.Initialize(spawn.Config.Stats); // clones into runtime stats
+                }
+
+
+                _activeEnemies.Add(enemyGO);
             }
         }
+  
         _currentWave++;
         _isNewWave = false;
     }
@@ -107,6 +123,8 @@ public class WaveManager : MonoBehaviour
     private void WaveCleared()
     {
         Debug.Log($"[WaveManager] Wave #{_currentWave} cleared!");
+        OnWaveClear?.Invoke();
+        StartNextWave();
         // TODO: Add delay or UI prompt before next wave
     }
     #endregion
