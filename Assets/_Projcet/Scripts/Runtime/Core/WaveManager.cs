@@ -1,6 +1,6 @@
-using Newtonsoft.Json.Bson;
 using Sirenix.OdinInspector;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +27,9 @@ public class WaveManager : MonoBehaviour
     #region Wave & Spawn Settings
     [Title("Wave Settings")]
     [InfoBox("Defines the sequence of waves. Each WaveConfig contains enemy spawns.")]
-    [SerializeField] private bool WaitForInput;
+    [Tooltip("If true, waits for manual input (debug/test) instead of auto-starting.")]
+    [SerializeField] private bool WaitForInput = true;
+
     [SerializeField] private List<WaveConfig> _waves = new();
 
     [Title("Spawn Settings")]
@@ -37,61 +39,46 @@ public class WaveManager : MonoBehaviour
 
     #region Scaling Settings
     [TitleGroup("Scaling Settings", Alignment = TitleAlignments.Centered)]
-    [InfoBox("These values define how enemy stats scale as waves progress or as time passes.\n" +
-             "Designers: tweak here to adjust difficulty curve.")]
+    [InfoBox("Scaling Formula:\n" +
+             "Health Multiplier = 1 + (Wave * HealthPerWave) + (Minutes * HealthPerMinute)\n" +
+             "Damage Multiplier = 1 + (Wave * DamagePerWave) + (Minutes * DamagePerMinute)")]
 
-    [HorizontalGroup("Scaling Settings/Split", Width = 120)]
-    [VerticalGroup("Scaling Settings/Split/Left")]
-    [LabelText("Time Scale (sec/unit)"), Range(1f, 120f)]
-    [GUIColor(0.6f, 0.8f, 1f)]
+    [VerticalGroup("Scaling Settings/Left"), LabelText("Time Scale (sec/unit)"), Range(1f, 120f)]
+    [GUIColor(0.6f, 0.8f, 1f), Tooltip("Controls how quickly time-based scaling accumulates. Lower = faster scaling.")]
     [SerializeField] private float _timeScale = 30f;
 
-    [VerticalGroup("Scaling Settings/Split/Right")]
-    [LabelText("Damage Growth (per wave)"), Range(0f, 0.5f)]
-    [GUIColor(1f, 0.7f, 0.2f)]
+    [VerticalGroup("Scaling Settings/Right"), LabelText("Damage Growth (per wave)"), Range(0f, 0.5f)]
+    [GUIColor(1f, 0.7f, 0.2f), Tooltip("Flat % increase in enemy damage per wave (0.1 = 10% per wave).")]
     [SerializeField] private float _damagePerWave = 0.1f;
 
-    [VerticalGroup("Scaling Settings/Split/Right")]
-    [LabelText("Health Growth (per wave)"), Range(0f, 0.5f)]
-    [GUIColor(0.6f, 1f, 0.6f)]
+    [VerticalGroup("Scaling Settings/Right"), LabelText("Health Growth (per wave)"), Range(0f, 0.5f)]
+    [GUIColor(0.6f, 1f, 0.6f), Tooltip("Flat % increase in enemy HP per wave (0.15 = 15% per wave).")]
     [SerializeField] private float _healthPerWave = 0.15f;
 
-    [VerticalGroup("Scaling Settings/Split/Right")]
-    [LabelText("Damage Growth (per min)"), Range(0f, 0.5f)]
-    [GUIColor(1f, 0.9f, 0.4f)]
+    [VerticalGroup("Scaling Settings/Right"), LabelText("Damage Growth (per min)"), Range(0f, 0.5f)]
+    [GUIColor(1f, 0.9f, 0.4f), Tooltip("Flat % increase in enemy damage per minute elapsed.")]
     [SerializeField] private float _damagePerMinute = 0.05f;
 
-    [VerticalGroup("Scaling Settings/Split/Right")]
-    [LabelText("Health Growth (per min)"), Range(0f, 0.5f)]
-    [GUIColor(0.9f, 1f, 0.4f)]
+    [VerticalGroup("Scaling Settings/Right"), LabelText("Health Growth (per min)"), Range(0f, 0.5f)]
+    [GUIColor(0.9f, 1f, 0.4f), Tooltip("Flat % increase in enemy HP per minute elapsed.")]
     [SerializeField] private float _healthPerMinute = 0.05f;
     #endregion
 
     #region Runtime State
-    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly]
-    [LabelText("Current Wave")] private int _currentWave = 0;
+    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly, LabelText("Current Wave")]
+    private int _currentWave = 0;
 
-    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly]
-    [LabelText("Active Enemies")] private readonly List<GameObject> _activeEnemies = new();
+    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly, LabelText("Active Enemies")]
+    private readonly List<GameObject> _activeEnemies = new();
 
-    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly]
-    [LabelText("Elapsed Time (s)")] private float _currentTime;
+    [FoldoutGroup("Runtime State"), ShowInInspector, ReadOnly, LabelText("Elapsed Time (s)")]
+    private float _currentTime;
     #endregion
 
     #region Events
-
-    private void OnEnable()
-    {
-        EnemyController.OnEnemyDeath += RemoveEnemy;
-    }
-
-    private void OnDisable()
-    {
-        EnemyController.OnEnemyDeath -= RemoveEnemy;
-    }
-
+    private void OnEnable() => EnemyController.OnEnemyDeath += RemoveEnemy;
+    private void OnDisable() => EnemyController.OnEnemyDeath -= RemoveEnemy;
     #endregion
-
 
     #region Unity Lifecycle
     private void Start()
@@ -101,17 +88,13 @@ public class WaveManager : MonoBehaviour
         Debug.Log("[WaveManager] Ready. Press debug buttons or call StartNextWave().");
 
         if (!WaitForInput)
-        {
             StartNextWave();
-        }
-
-
     }
 
     private void Update()
     {
         _currentTime += Time.deltaTime;
-        
+
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.N)) StartNextWave();
         if (Input.GetKeyDown(KeyCode.C)) ForceClearEnemies();
@@ -129,38 +112,100 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        if (_activeEnemies.Count == 0)
+        if (_activeEnemies.Count > 0)
         {
-            var config = _waves[_currentWave];
-            Debug.Log($"[WaveManager] Starting Wave #{_currentWave + 1}: {config.name}");
+            Debug.LogWarning($"[WaveManager] Cannot start new wave. Enemies remaining: {_activeEnemies.Count}");
+            return;
+        }
 
-            foreach (var spawn in config.Enemies)
+        var wave = _waves[_currentWave];
+        if (wave.IsBossWave && wave.BossEnemy != null)
+            SpawnBoss(wave);
+        else
+            SpawnWave(wave);
+
+        _currentWave++;
+    }
+
+    private void SpawnWave(WaveConfig config)
+    {
+        foreach (var spawn in config.Enemies)
+        {
+            for (int i = 0; i < spawn.Count; i++)
             {
-                for (int i = 0; i < spawn.Count; i++)
+                var enemyGO = Instantiate(spawn.Config.Prefab, GetSpawnPoint(), Quaternion.identity);
+                var enemy = enemyGO.GetComponent<EnemyController>();
+
+                if (enemy != null)
                 {
-                    var enemyGO = Instantiate(spawn.Config.Prefab, GetSpawnPoint(), Quaternion.identity);
-                    var enemy = enemyGO.GetComponent<EnemyController>();
+                    var scaledStats = ScaleStats(spawn.Config.Stats, _currentWave, _currentTime);
+                    enemy.Initialize(scaledStats,
+                        1f + (_currentWave * _healthPerWave) + (_currentTime / 60f * _healthPerMinute),
+                        1f + (_currentWave * _damagePerWave) + (_currentTime / 60f * _damagePerMinute));
+                }
 
-                    if (enemy != null)
+                _activeEnemies.Add(enemyGO);
+            }
+        }
+    }
+
+    private void SpawnBoss(WaveConfig config)
+    {
+        Debug.Log("[WaveManager] Spawning Boss Wave!");
+
+        var bossGO = Instantiate(config.BossEnemy.Prefab, GetSpawnPoint(), Quaternion.identity);
+        var boss = bossGO.GetComponent<EnemyController>();
+
+        if (boss != null)
+        {
+            var scaledStats = ScaleStats(config.BossEnemy.Stats, _currentWave, _currentTime);
+            boss.Initialize(scaledStats,
+                1f + (_currentWave * _healthPerWave) + (_currentTime / 60f * _healthPerMinute),
+                1f + (_currentWave * _damagePerWave) + (_currentTime / 60f * _damagePerMinute));
+        }
+
+        _activeEnemies.Add(bossGO);
+
+        StartCoroutine(BossReinforcements(config, bossGO));
+    }
+
+    private IEnumerator BossReinforcements(WaveConfig config, GameObject bossGO)
+    {
+        int reinforcementCycle = 0;
+
+        while (bossGO != null)
+        {
+            yield return new WaitForSeconds(config.ReinforcementDelay);
+
+            if (bossGO != null)
+            {
+                reinforcementCycle++;
+                Debug.Log($"[WaveManager] Boss still alive — reinforcement cycle #{reinforcementCycle}");
+
+                foreach (var spawn in config.Enemies)
+                {
+                    int scaledCount = spawn.Count + reinforcementCycle;
+
+                    for (int i = 0; i < scaledCount; i++)
                     {
-                        var scaledStats = ScaleStats(spawn.Config.Stats, _currentWave, _currentTime);
-                        enemy.Initialize(scaledStats,
-                            1f + (_currentWave * _healthPerWave) + (_currentTime / 60f * _healthPerMinute),
-                            1f + (_currentWave * _damagePerWave) + (_currentTime / 60f * _damagePerMinute));
-                    }
+                        var enemyGO = Instantiate(spawn.Config.Prefab, GetSpawnPoint(), Quaternion.identity);
+                        var enemy = enemyGO.GetComponent<EnemyController>();
 
-                    _activeEnemies.Add(enemyGO);
+                        if (enemy != null)
+                        {
+                            var scaledStats = ScaleStats(spawn.Config.Stats, _currentWave, _currentTime);
+                            enemy.Initialize(scaledStats,
+                                1f + (_currentWave * _healthPerWave) + (_currentTime / 60f * _healthPerMinute),
+                                1f + (_currentWave * _damagePerWave) + (_currentTime / 60f * _damagePerMinute));
+                        }
+
+                        _activeEnemies.Add(enemyGO);
+                    }
                 }
             }
-
-            _currentWave++;
-        }
-        else
-        {
-            Debug.LogWarning($"[Wave Manager] You must clear the wave before to spawn a new wave. Enemies Remaining {_activeEnemies.Count}");
         }
 
-
+        Debug.Log("[WaveManager] Boss defeated — reinforcements stopped!");
     }
 
     public void RemoveEnemy(GameObject enemy)
@@ -168,21 +213,27 @@ public class WaveManager : MonoBehaviour
         if (_activeEnemies.Contains(enemy))
         {
             _activeEnemies.Remove(enemy);
+            Debug.Log($"[WaveManager] Enemy removed. {_activeEnemies.Count} left.");
         }
-        WaveCleared();
+
+        if (_activeEnemies.Count == 0)
+            WaveCleared();
     }
+    #endregion
 
-
+    #region Wave Clear
     [Button(ButtonSizes.Medium), GUIColor(1f, 0.6f, 0.6f)]
     private void WaveCleared()
     {
-        if (_activeEnemies.Count == 0 )
+        if (_activeEnemies.Count == 0)
         {
             Debug.Log($"[WaveManager] Wave #{_currentWave} cleared!");
             StartNextWave();
         }
     }
+    #endregion
 
+    #region Scaling Formula
     private EnemyStats ScaleStats(EnemyStats baseStats, int waveNumber, float timeAlive)
     {
         float healthMult = 1f + (waveNumber * _healthPerWave) + ((timeAlive / 60f) * _healthPerMinute);
@@ -210,7 +261,7 @@ public class WaveManager : MonoBehaviour
             _activeEnemies.Clear();
             Debug.Log("[WaveManager] Enemies cleared manually.");
         }
-        else 
+        else
         {
             WaveCleared();
         }

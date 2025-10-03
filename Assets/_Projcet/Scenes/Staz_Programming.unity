@@ -859,10 +859,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e472c386592c17b42b8b96fd8080115b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WaitForInput: 1
   _waves:
   - {fileID: 11400000, guid: f43709b5032f3e24cbb6d0851c978476, type: 2}
   - {fileID: 11400000, guid: 0eb22a01551ff7c4d93ac019afa788e1, type: 2}
   - {fileID: 11400000, guid: 2d5180ae47c957a40a1082e8254c03a6, type: 2}
+  - {fileID: 11400000, guid: 7df6bd0983ffde148b9e13c36ff9e8ee, type: 2}
   _spawnPoints:
   - {fileID: 1115546017}
   - {fileID: 1453166935}
