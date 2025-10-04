@@ -32,7 +32,7 @@ public class EnemyController : MonoBehaviour
 
     [BoxGroup("Runtime HUD/Combat")]
     [ShowInInspector, GUIColor(0.4f, 0.8f, 1f)]
-    [SerializeField] private float _staggerCooldown = 5f;
+    [SerializeField] public float _staggerCooldown { get; private set; } = 5f;
 
 
     [BoxGroup("Runtime HUD/Loot")]
