@@ -82,6 +82,7 @@ public class EnemyController : MonoBehaviour
         SetTarget();
         agent = GetComponent<NavMeshAgent>(); // sets the agent var to the NavMeshAgent component
         agent.speed = MoveSpeed;
+        targetOffset = new Vector3( attackRange, 0, attackRange);
     }
 
     public static event Action<GameObject> OnEnemyDeath;
@@ -119,7 +120,7 @@ public class EnemyController : MonoBehaviour
     {
         if (target != null && Vector3.Distance(transform.position, target.position) >= attackRange)
         {
-            agent.SetDestination(target.position); // sets the target to the player's position
+            agent.SetDestination(target.position + targetOffset); // sets the target to the player's position + attack range offset
         }
         else if (target != null && Vector3.Distance(transform.position, target.position) <= attackRange)
         {
