@@ -951,15 +951,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 1ef2e48b42b3b0147bcba1906f47d397, type: 2}
     - target: {fileID: 8946838797837918017, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.17138863
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8946838797837918017, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.34915075
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8946838797837918017, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.36142254
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9065246828236237035, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -978,7 +978,16 @@ PrefabInstance:
       addedObject: {fileID: 2136997449}
     - targetCorrespondingSourceObject: {fileID: 32166899289351614, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2136997450}
+      addedObject: {fileID: 2136997455}
+    - targetCorrespondingSourceObject: {fileID: 32166899289351614, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2136997456}
+    - targetCorrespondingSourceObject: {fileID: 4103468886000946321, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2008619851}
+    - targetCorrespondingSourceObject: {fileID: 4103468886000946321, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2008619850}
   m_SourcePrefab: {fileID: 100100000, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
 --- !u!1 &1115546016
 GameObject:
@@ -1675,6 +1684,44 @@ MonoBehaviour:
   _damagePerMinute: 0.05
   _healthPerMinute: 0.05
   _currentWave: 0
+--- !u!1 &2008619846 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4103468886000946321, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
+  m_PrefabInstance: {fileID: 943606131}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2008619850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2008619846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0fc4c0b7a69e8543b8b34d11ef06d23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &2008619851
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2008619846}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.99999994, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2047474084
 GameObject:
   m_ObjectHideFlags: 0
@@ -2844,7 +2891,29 @@ MonoBehaviour:
   _interactionMask:
     serializedVersion: 2
     m_Bits: 1
---- !u!96 &2136997450
+--- !u!95 &2136997455
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136997442}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 03766c9f407bd4f4aa0d77884dd8b463, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!96 &2136997456
 TrailRenderer:
   serializedVersion: 3
   m_ObjectHideFlags: 0
@@ -2868,7 +2937,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -196146090775662410, guid: a9f670f4eae962b4683c35ae3d1db878, type: 3}
+  - {fileID: 2895064947943234598, guid: e7170b34430d5ef44bb8add062be7881, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2889,7 +2958,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.3
+  m_Time: 1.72
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
@@ -2898,7 +2967,7 @@ TrailRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.03133011
+        time: 0.04819277
         value: 1
         inSlope: 0
         outSlope: 0
@@ -2908,12 +2977,12 @@ TrailRenderer:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.122343004
-        inSlope: 0
-        outSlope: 0
+        value: 0
+        inSlope: -2.9865477
+        outSlope: -2.9865477
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.043037944
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2

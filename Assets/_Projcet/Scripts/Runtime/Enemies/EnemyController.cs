@@ -49,6 +49,7 @@ public class EnemyController : MonoBehaviour
 
 
     public static event Action<GameObject> OnEnemyDeath;
+
     #region Unity Life Cycle
 
     private GameObject _player;
