@@ -17,4 +17,4 @@ MonoBehaviour:
     Count: 5
   IsBossWave: 1
   BossEnemy: {fileID: 11400000, guid: c5defb4cdd6c3bf4097c01ca14ad35aa, type: 2}
-  ReinforcementDelay: 2
+  ReinforcementDelay: 12

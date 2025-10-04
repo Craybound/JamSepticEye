@@ -1,7 +1,11 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
-using UnityEngine.InputSystem;
 using System;
+using System.Collections;
+
+
+public enum EnemyState { Active, Staggered }
+
 
 public class EnemyController : MonoBehaviour
 {
@@ -26,6 +30,11 @@ public class EnemyController : MonoBehaviour
     [ShowInInspector, ReadOnly, GUIColor(0.4f, 0.8f, 1f)]
     public float MoveSpeed => _runtimeStats.MoveSpeed;
 
+    [BoxGroup("Runtime HUD/Combat")]
+    [ShowInInspector, GUIColor(0.4f, 0.8f, 1f)]
+    [SerializeField] private float _staggerCooldown = 5f;
+
+
     [BoxGroup("Runtime HUD/Loot")]
     [ShowInInspector, ReadOnly, GUIColor(0.9f, 0.5f, 1f)]
     public int SoulDrop => _runtimeStats.SoulDrop;
@@ -45,10 +54,17 @@ public class EnemyController : MonoBehaviour
     #region Private State
     private EnemyStats _runtimeStats;
     private int _currentHealth;
+
+    public EnemyState state { get; private set; }
+
     #endregion
 
 
+
+
+
     public static event Action<GameObject> OnEnemyDeath;
+    public static event Action OnEnemyStagger;
 
     #region Unity Life Cycle
 
@@ -60,7 +76,22 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        Move();
+        switch (state)
+        {
+            default:
+                return;
+
+            case EnemyState.Active:
+                Move();
+                break;
+
+            case EnemyState.Staggered:
+                StartCoroutine(EnemyStagger());
+                break;
+
+        }
+
+
     }
     #endregion
 
@@ -94,8 +125,22 @@ public class EnemyController : MonoBehaviour
     public void TakeDamage(int amount)
     {
         _currentHealth -= amount;
+        if (_currentHealth <= MaxHealth * 0.1f)
+        {
+            state = EnemyState.Staggered;
+        }
         if (_currentHealth <= 0) Die();
     }
+
+    private IEnumerator EnemyStagger()
+    {
+        OnEnemyStagger?.Invoke();
+        yield return new WaitForSeconds(_staggerCooldown);
+        state = EnemyState.Active;
+    }
+
+
+
 
     private void Die()
     {
@@ -126,6 +171,12 @@ public class EnemyController : MonoBehaviour
     private void DamageSelf(int amount = 10)
     {
         TakeDamage(amount);
+    }
+
+    [ButtonGroup("Debug/Combat"), GUIColor(0.4f, 1f, 0.4f)]
+    private void StaggerSelf()
+    {
+        _currentHealth = Mathf.RoundToInt(MaxHealth * 0.1f);
     }
 
     [FoldoutGroup("Debug/Overrides"), GUIColor(0.6f, 0.8f, 1f)]

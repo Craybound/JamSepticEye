@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 115418113799224067}
   m_Layer: 0
   m_Name: Enemy_Dash_Boss_PF
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -123,3 +123,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e3aa546eff8b8448977cb17dffdd2b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _staggerCooldown: 5
