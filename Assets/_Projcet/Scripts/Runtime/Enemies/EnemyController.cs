@@ -31,8 +31,8 @@ public class EnemyController : MonoBehaviour
     public float MoveSpeed => _runtimeStats.MoveSpeed;
 
     [BoxGroup("Runtime HUD/Combat")]
-    [ShowInInspector, GUIColor(0.4f, 0.8f, 1f)]
-    [SerializeField] public float _staggerCooldown { get; private set; } = 5f;
+    [GUIColor(0.4f, 0.8f, 1f)]
+    public float _staggerCooldown { get; private set; } = 5f;
 
 
     [BoxGroup("Runtime HUD/Loot")]
@@ -64,7 +64,7 @@ public class EnemyController : MonoBehaviour
 
 
     public static event Action<GameObject> OnEnemyDeath;
-    public static event Action OnEnemyStagger;
+    public event Action OnEnemyStagger;
 
     #region Unity Life Cycle
 
@@ -76,6 +76,8 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log(state);
+
         switch (state)
         {
             default:
@@ -177,6 +179,7 @@ public class EnemyController : MonoBehaviour
     private void StaggerSelf()
     {
         _currentHealth = Mathf.RoundToInt(MaxHealth * 0.1f);
+        OnEnemyStagger?.Invoke();
     }
 
     [FoldoutGroup("Debug/Overrides"), GUIColor(0.6f, 0.8f, 1f)]

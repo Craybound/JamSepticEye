@@ -14,22 +14,29 @@ public class Ability_UI : MonoBehaviour
 
     private void Awake()
     {
-        _enemyController = GetComponent<EnemyController>();
+        _enemyController = GetComponentInParent<EnemyController>();
+    }
+
+
+    private void Start()
+    {
         _activeTime = _enemyController._staggerCooldown;
+        _indicator.enabled = false;
     }
 
     private void OnEnable()
     {
-        EnemyController.OnEnemyStagger += ActivateIndicator;
+        _enemyController.OnEnemyStagger += ActivateIndicator;
     }
 
     private void OnDisable()
     {
-        EnemyController.OnEnemyStagger -= ActivateIndicator;
+        _enemyController.OnEnemyStagger -= ActivateIndicator;
     }
 
     private void ActivateIndicator()
     {
+        _indicator.enabled = true;
         StartCoroutine(IndicatorRuntime());
     }
 
