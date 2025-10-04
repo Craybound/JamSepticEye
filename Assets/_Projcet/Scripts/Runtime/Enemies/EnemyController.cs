@@ -51,23 +51,27 @@ public class EnemyController : MonoBehaviour
     [ShowInInspector, ReadOnly]
     public Transform target; // target var for object targeting
 
-    [BoxGroup("Movement Variables/Transform")]
-    [ShowInInspector, ReadOnly]
-    public Vector3 targetOffset = new Vector3(.5f, 0f, .5f); // offset for object targeting
+    [BoxGroup("Movement Variables/Targeting")]
+    [ShowInInspector]
+    public float targetOffset = 1f; // adjustable offset for object targeting
 
-    [BoxGroup("Movement Variables/Transform")]
+    [BoxGroup("Movement Variables/Targeting")]
+    [ShowInInspector, ReadOnly]
+    public float trueOffset; // actual offset for object targeting
+
+    [BoxGroup("Movement Variables/Targeting")]
     [ShowInInspector, ReadOnly]
     private NavMeshAgent agent; // NavMeshAgent var for movement
 
-    [BoxGroup("Movement Variables/Transform")]
+    [BoxGroup("Movement Variables/Targeting")]
     [ShowInInspector]
     public float attackRange = 2f; // Attack range
 
-    [BoxGroup("Movement Variables/Transform")]
+    [BoxGroup("Movement Variables/Attack")]
     [ShowInInspector]
     public float attackSpeed = 1f; // Generic attck speed / higher number means slower attack speed
 
-    [BoxGroup("Movement Variables/Transform")]
+    [BoxGroup("Movement Variables/Attack")]
     [ShowInInspector]
     public float attackTimer = 1f; // Timer for next attack
     #endregion
@@ -82,7 +86,7 @@ public class EnemyController : MonoBehaviour
         SetTarget();
         agent = GetComponent<NavMeshAgent>(); // sets the agent var to the NavMeshAgent component
         agent.speed = MoveSpeed;
-        targetOffset = new Vector3( attackRange, 0, attackRange);
+        SetOffset();
     }
 
     public static event Action<GameObject> OnEnemyDeath;
@@ -120,7 +124,9 @@ public class EnemyController : MonoBehaviour
     {
         if (target != null && Vector3.Distance(transform.position, target.position) >= attackRange)
         {
-            agent.SetDestination(target.position + targetOffset); // sets the target to the player's position + attack range offset
+            Vector3 direction = (transform.position - target.position).normalized;
+            Vector3 adjustedTarget = target.position + direction * trueOffset;
+            agent.SetDestination(adjustedTarget);
         }
         else if (target != null && Vector3.Distance(transform.position, target.position) <= attackRange)
         {
@@ -141,6 +147,18 @@ public class EnemyController : MonoBehaviour
             {
                 Debug.LogWarning("Player target not assigned and no object with 'Player' tag found.");
             }
+        }
+    }
+
+    private void SetOffset()
+    {
+        if (this.tag == "Walker")
+        {
+            trueOffset = targetOffset; // given default settings, this means the walker will always try to be about 1f away from the player
+        }
+        else if (this.tag == "Ranged")
+        {
+            trueOffset = attackRange - targetOffset; // given default settings, this means the ranged enemy will always try to be about 4.5f away from the player
         }
     }
 

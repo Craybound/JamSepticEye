@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 369017064226880492}
   m_Layer: 0
   m_Name: Enemy_Walker
-  m_TagString: Untagged
+  m_TagString: Walker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  targetOffset: {x: 0.5, y: 0, z: 0.5}
+  targetOffset: 1
   attackRange: 2
   attackSpeed: 1
   attackTimer: 1
