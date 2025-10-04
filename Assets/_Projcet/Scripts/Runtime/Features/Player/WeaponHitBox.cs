@@ -11,15 +11,12 @@ public class WeaponHitbox : MonoBehaviour
     private void Awake()
     {
         _collider = GetComponent<Collider>();
-        _collider.enabled = false;
-        _collider.isTrigger = true;
     }
 
     public void Init(GameObject owner, float damage, string targetTag = "Enemy")
     {
         _owner = owner;
         _damage = damage;
-        _targetTag = targetTag;
     }
 
     private void OnTriggerEnter(Collider other)
