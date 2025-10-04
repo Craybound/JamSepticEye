@@ -118,6 +118,7 @@ public class EliteDasherAbility : AbilitySO
         _cooldownRight = dashCooldown;
         Debug.Log("[Elite Dasher] Dash started!");
 
+<<<<<<< Updated upstream
         // // --- Determine dash direction (mouse-based aim) ---
         // Vector3 dashDir = owner.transform.forward;
         // Camera cam = Camera.main;
@@ -157,6 +158,17 @@ public class EliteDasherAbility : AbilitySO
             dashDir = moveState.WorldMoveDir;
 
         // --- Execute dash ---
+=======
+        // --- NEW: read WASD movement direction (fallback to facing if idle)
+        Vector3 dashDir = owner.transform.forward; // fallback
+        var moveState = owner.GetComponent<PlayerMovementState>();
+        if (moveState != null && moveState.WorldMoveDir.sqrMagnitude > 1e-6f)
+            dashDir = moveState.WorldMoveDir;
+
+        dashDir.y = 0f;
+        if (dashDir.sqrMagnitude > 1f) dashDir.Normalize();
+
+>>>>>>> Stashed changes
         var controller = owner.GetComponent<CharacterController>();
         var host = owner.GetComponent<MonoBehaviour>();
 
@@ -167,7 +179,11 @@ public class EliteDasherAbility : AbilitySO
         }
         else
         {
+<<<<<<< Updated upstream
             owner.transform.position += dashDir.normalized * dashDistance;
+=======
+            owner.transform.position += dashDir * dashDistance;
+>>>>>>> Stashed changes
         }
     }
 

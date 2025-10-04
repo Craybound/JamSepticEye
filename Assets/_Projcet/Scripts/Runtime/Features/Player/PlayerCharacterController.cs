@@ -11,10 +11,16 @@ public class PlayerCharacterController : MonoBehaviour
     [Header("Rotation")]
     [SerializeField] private float _turnSpeed = 15f; // Higher = snappier rotation
     [SerializeField] private LayerMask _groundMask;   // Assign "Ground" layer in Inspector
+<<<<<<< Updated upstream
     [SerializeField] private PlayerMovementState _moveState; // To dynamically update the movement of the player
+=======
+    [Tooltip("Fixes models that don't face +Z. Positive rotates to the right.")]
+
+>>>>>>> Stashed changes
     private Vector2 _moveInput;
     private float _yVel;
     private Camera _mainCam;
+    private PlayerMovementState _moveState;
 
     private void Awake()
     {
@@ -28,7 +34,11 @@ public class PlayerCharacterController : MonoBehaviour
     public void OnMove(InputValue value)
     {
         _moveInput = value.Get<Vector2>();
+<<<<<<< Updated upstream
         _moveState?.SetMoveInput(_moveInput); // To get the movement in world in real-time
+=======
+        _moveState?.SetMoveInput(_moveInput);
+>>>>>>> Stashed changes
     }
     private void Update()
     {
@@ -65,19 +75,12 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void HandleRotation()
     {
-        if (_mainCam == null) return;
-
-        // Get mouse position in screen space
-        Vector2 mousePos = Mouse.current.position.ReadValue();
-
-        // Ray from camera through mouse cursor
+        if (_mainCam == null) return; // Get mouse position in screen space 
+        Vector2 mousePos = Mouse.current.position.ReadValue(); // Ray from camera through mouse cursor 
         Ray ray = _mainCam.ScreenPointToRay(mousePos);
-
         if (Physics.Raycast(ray, out RaycastHit hit, 100f, _groundMask))
         {
-            Vector3 lookTarget = hit.point;
-            lookTarget.y = transform.position.y; // keep rotation flat
-
+            Vector3 lookTarget = hit.point; lookTarget.y = transform.position.y; // keep rotation flat 
             Vector3 direction = (lookTarget - transform.position).normalized;
             if (direction.sqrMagnitude > 0.001f)
             {

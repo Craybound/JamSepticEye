@@ -878,8 +878,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 4d4c1b8b16bf40141a23da379a7f1b5a, type: 2}
     - target: {fileID: 2291530382481775427, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
+      propertyPath: _visual
+      value: 
+      objectReference: {fileID: 1525757536}
+    - target: {fileID: 2291530382481775427, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
       propertyPath: _groundMask.m_Bits
-      value: 119
+      value: 255
       objectReference: {fileID: 0}
     - target: {fileID: 4523645940853761928, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
       propertyPath: m_Name
@@ -1164,6 +1168,16 @@ Transform:
   m_Children: []
   m_Father: {fileID: 515983036}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1525757535 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8610712892866503982, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
+  m_PrefabInstance: {fileID: 943606131}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1525757536 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8946838797837918017, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
+  m_PrefabInstance: {fileID: 943606131}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1532899903
 GameObject:
   m_ObjectHideFlags: 0
@@ -1704,6 +1718,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0fc4c0b7a69e8543b8b34d11ef06d23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< Updated upstream
+=======
+  _collider: {fileID: 2008619851}
+  _owner: {fileID: 1525757535}
+>>>>>>> Stashed changes
 --- !u!65 &2008619851
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2876,7 +2895,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaf93cd8d5f0a424687119f8d9e6177c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< Updated upstream
   _primaryAbility: {fileID: 0}
+=======
+  _primaryAbility: {fileID: 11400000, guid: e7d2edb9645bc054ba337a00e6c24b5b, type: 2}
+>>>>>>> Stashed changes
   _secondaryAbility: {fileID: 11400000, guid: e7d2edb9645bc054ba337a00e6c24b5b, type: 2}
 --- !u!114 &2136997449
 MonoBehaviour:

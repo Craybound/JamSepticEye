@@ -19,7 +19,7 @@ MonoBehaviour:
   meleeHitDelay: 0.3
   enemyMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   dashDistance: 5
   dashSpeed: 20
   dashCooldown: 2
