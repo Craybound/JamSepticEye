@@ -70,37 +70,13 @@ public class EliteDasherAbility : AbilitySO
 
         // Initialize the hitbox for the attack (handled by animation events)
         var hitbox = owner.GetComponentInChildren<WeaponHitbox>();
+        Debug.Log(hitbox.name);
         if (hitbox != null)
             hitbox.Init(owner, meleeDamage);
 
-        // Optional fallback if no animation is set up (old coroutine-based damage check)
-        var host = owner.GetComponent<MonoBehaviour>();
-        if (host != null)
-            host.StartCoroutine(MeleeHitDelayed(owner));
     }
 
-    /// <summary>
-    /// Legacy fallback for hit timing if animation events aren't set up yet.
-    /// </summary>
-    private IEnumerator MeleeHitDelayed(GameObject owner)
-    {
-        yield return new WaitForSeconds(meleeHitDelay);
 
-        Vector3 origin = owner.transform.position + owner.transform.forward * meleeRange * 0.5f;
-        Collider[] hits = Physics.OverlapSphere(origin, meleeRange, enemyMask);
-
-        foreach (var hit in hits)
-        {
-            if (hit.CompareTag("Enemy"))
-            {
-                Debug.Log($"[Elite Dasher] Hit {hit.name} for {meleeDamage} damage!");
-                
-                hit.TryGetComponent<EnemyController>(out EnemyController enemy);
-                if (enemy != null)
-                    enemy.TakeDamage((int)meleeDamage);
-            }
-        }
-    }
     #endregion
 
 

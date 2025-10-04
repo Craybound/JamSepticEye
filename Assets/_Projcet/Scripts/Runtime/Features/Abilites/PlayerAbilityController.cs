@@ -35,6 +35,7 @@ public class PlayerAbilityController : MonoBehaviour
     {
         _primaryAbility = newPrimary;
         _secondaryAbility = newSecondary;
+
         Debug.Log($"[AbilityController] Equipped: {newPrimary?.AbilityName} / {newSecondary?.AbilityName}");
     }
 }
