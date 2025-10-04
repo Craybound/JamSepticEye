@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 [CreateAssetMenu(menuName = "Abilities/Elite Dasher Ability")]
 public class EliteDasherAbility : AbilitySO
@@ -54,22 +55,40 @@ public class EliteDasherAbility : AbilitySO
         var controller = owner.GetComponent<CharacterController>();
         var host = owner.GetComponent<MonoBehaviour>();
 
+        // figure out dash direction (towards mouse, flattened)
+        Vector3 dashDir = owner.transform.forward; // fallback if raycast fails
+
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            Ray ray = cam.ScreenPointToRay(mousePos);
+
+            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+            {
+                Vector3 lookTarget = hit.point;
+                lookTarget.y = owner.transform.position.y; // keep on ground plane
+                dashDir = (lookTarget - owner.transform.position).normalized;
+            }
+        }
+
+        // dash movement
         if (controller != null && host != null)
         {
-            host.StartCoroutine(DashCoroutine(controller, owner.transform.forward));
+            host.StartCoroutine(DashCoroutine(controller, dashDir));
         }
         else
         {
-            // fallback if no controller (just teleport)
-            owner.transform.position += owner.transform.forward * dashDistance;
+            owner.transform.position += dashDir * dashDistance;
         }
 
-        // Start i-frames
+        // start i-frames
         if (host != null)
             host.StartCoroutine(GrantIFrames(owner));
 
         _cooldownRight = dashCooldown;
     }
+
 
     private IEnumerator DashCoroutine(CharacterController controller, Vector3 direction)
     {

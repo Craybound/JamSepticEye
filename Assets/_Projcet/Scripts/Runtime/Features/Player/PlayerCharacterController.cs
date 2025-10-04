@@ -9,36 +9,63 @@ public class PlayerCharacterController : MonoBehaviour
     [SerializeField] private float _gravity = -20f;
 
     [Header("Rotation")]
-    [SerializeField] private float _turnSpeed = 15f; //Higher the number = snappier the rotation
+    [SerializeField] private float _turnSpeed = 15f; // Higher = snappier rotation
+    [SerializeField] private LayerMask _groundMask;   // Assign "Ground" layer in Inspector
 
     private Vector2 _moveInput;
     private float _yVel;
 
+    private Camera _mainCam;
+
     private void Awake()
     {
         if (_controller == null) _controller = GetComponent<CharacterController>();
+        _mainCam = Camera.main;
     }
 
-    //PlayerInput callback
+    // InputSystem callback
     public void OnMove(InputValue value) => _moveInput = value.Get<Vector2>();
 
     private void Update()
     {
+        HandleMovement();
+        HandleRotation();
+    }
+
+    private void HandleMovement()
+    {
         Vector3 move = new Vector3(_moveInput.x, 0f, _moveInput.y);
         if (move.sqrMagnitude > 1f) move.Normalize();
 
-        //Gravity handling to make the player stay in the ground
+        // Gravity
         if (_controller.isGrounded && _yVel < 0f) _yVel = -2f;
         _yVel += _gravity * Time.deltaTime;
 
         Vector3 velocity = move * _speed + Vector3.up * _yVel;
         _controller.Move(velocity * Time.deltaTime);
+    }
 
-        //This is for the rotation of the body on accordance with the movement
-        if (move.sqrMagnitude > 0.001f)
+    private void HandleRotation()
+    {
+        if (_mainCam == null) return;
+
+        // Get mouse position in screen space
+        Vector2 mousePos = Mouse.current.position.ReadValue();
+
+        // Ray from camera through mouse cursor
+        Ray ray = _mainCam.ScreenPointToRay(mousePos);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f, _groundMask))
         {
-            Quaternion targetRot = Quaternion.LookRotation(move, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, _turnSpeed * Time.deltaTime);
+            Vector3 lookTarget = hit.point;
+            lookTarget.y = transform.position.y; // keep rotation flat
+
+            Vector3 direction = (lookTarget - transform.position).normalized;
+            if (direction.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(direction, Vector3.up);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, _turnSpeed * Time.deltaTime);
+            }
         }
     }
 }
