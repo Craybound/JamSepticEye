@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85acf9785ab72e74d8fe6e50958ac160, type: 3}
   m_Name: Elite Dasher Ability
   m_EditorClassIdentifier: 
-  AbilityName: New Ability
+  AbilityName: Elite Dasher Ability
   meleeDamage: 10
   meleeRange: 1.5
   meleeCooldown: 1

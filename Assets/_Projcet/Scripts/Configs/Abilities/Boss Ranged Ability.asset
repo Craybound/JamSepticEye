@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: Boss Ranged Ability
   m_EditorClassIdentifier: 
   AbilityName: New Ability
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 1354423354127201514, guid: d5eca9b2fc28e114b94390b0af4a22e2, type: 3}
   damage: 10
   speed: 20
   pierces: 4
   cooldown: 0.45
   enemyMask:
     serializedVersion: 2
-    m_Bits: 0
-  volleyPrefab: {fileID: 0}
+    m_Bits: 64
+  volleyPrefab: {fileID: 1354423354127201514, guid: d5eca9b2fc28e114b94390b0af4a22e2, type: 3}
   projectileCount: 5
   spreadAngle: 25
   volleyCooldown: 3.2

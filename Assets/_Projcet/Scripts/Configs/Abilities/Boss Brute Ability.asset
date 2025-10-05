@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf7385fd8577e341badc9ca973714ae, type: 3}
   m_Name: Boss Brute Ability
   m_EditorClassIdentifier: 
-  AbilityName: New Ability
+  AbilityName: Boss Brute Ability
   damage: 20
   radius: 2.1
   halfAngle: 45
   cooldown: 0.8
   enemyMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   slamRadius: 3.2
   slamDamage: 22
   slamKnockback: 8
   slamCooldown: 3
   slamEnemyMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
