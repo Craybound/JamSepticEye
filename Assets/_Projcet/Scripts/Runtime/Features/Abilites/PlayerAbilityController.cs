@@ -7,6 +7,12 @@ public class PlayerAbilityController : MonoBehaviour
     [SerializeField] private AbilitySO _primaryAbility;
     [SerializeField] private AbilitySO _secondaryAbility;
 
+    private void Awake()
+    {
+        // clone starting abilities so runtime state is not shared with asset
+        if (_primaryAbility)   _primaryAbility   = Instantiate(_primaryAbility);
+        if (_secondaryAbility) _secondaryAbility = Instantiate(_secondaryAbility);
+    }
     private void Update()
     {
         _primaryAbility?.Tick(gameObject, Time.deltaTime);
@@ -33,8 +39,8 @@ public class PlayerAbilityController : MonoBehaviour
 
     public void SwapAbilities(AbilitySO newPrimary, AbilitySO newSecondary)
     {
-        _primaryAbility = newPrimary;
-        _secondaryAbility = newSecondary;
+        _primaryAbility   = newPrimary   ? Instantiate(newPrimary)   : null;
+        _secondaryAbility = newSecondary ? Instantiate(newSecondary) : null;
 
         Debug.Log($"[AbilityController] Equipped: {newPrimary?.AbilityName} / {newSecondary?.AbilityName}");
     }
