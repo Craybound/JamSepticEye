@@ -19,15 +19,31 @@ public class WeaponHitbox : MonoBehaviour
         _damage = damage;
     }
 
+
+
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == _owner) return;
-        if (!other.CompareTag(_targetTag)) return;
+        // Ignore self
+        if (other.gameObject == _owner)
+            return;
 
-        Debug.Log($"[Hitbox] hit {other.name} for {_damage} damage!");
+        // Optional: tag filter (only hit enemies, etc.)
+        if (!string.IsNullOrEmpty(_targetTag) && !other.CompareTag(_targetTag))
+            return;
+
+        // --- Damage Handling ---
+        bool damaged = false;
+
+        // Try damage via EnemyController
         if (other.TryGetComponent(out EnemyController enemy))
+        {
             enemy.TakeDamage((int)_damage);
+            damaged = true;
+        }
+
     }
+
 
     public void EnableHitbox() => _collider.enabled = true;
     public void DisableHitbox() => _collider.enabled = false;
