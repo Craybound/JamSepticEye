@@ -1,9 +1,17 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class AbilitySO : ScriptableObject
 {
+
     [Header("Meta")]
+    public Image Icon;
     public string AbilityName = "New Ability";
+
+    [TextArea]
+    public string Description;
+
+
 
     /// <summary>
     /// Called when player presses Primary input.

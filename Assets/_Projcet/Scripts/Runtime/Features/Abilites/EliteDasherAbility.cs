@@ -94,15 +94,24 @@ public class EliteDasherAbility : AbilitySO
         _cooldownRight = dashCooldown;
         Debug.Log("[Elite Dasher] Dash started!");
 
-        // --- NEW: read WASD movement direction (fallback to facing if idle)
-        Vector3 dashDir = owner.transform.forward; // fallback
-        var moveState = owner.GetComponent<PlayerMovementState>();
-        if (moveState != null && moveState.WorldMoveDir.sqrMagnitude > 1e-6f)
-            dashDir = moveState.WorldMoveDir;
+        // --- Determine dash direction (mouse-based aim) ---
+        Vector3 dashDir = owner.transform.forward;
+        Camera cam = Camera.main;
 
-        dashDir.y = 0f;
-        if (dashDir.sqrMagnitude > 1f) dashDir.Normalize();
+        if (cam != null)
+        {
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            Ray ray = cam.ScreenPointToRay(mousePos);
 
+            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+            {
+                Vector3 target = hit.point;
+                target.y = owner.transform.position.y;
+                dashDir = (target - owner.transform.position).normalized;
+            }
+        }
+
+        // --- Execute dash ---
         var controller = owner.GetComponent<CharacterController>();
         var host = owner.GetComponent<MonoBehaviour>();
 
@@ -113,6 +122,7 @@ public class EliteDasherAbility : AbilitySO
         }
         else
         {
+            // Fallback: instant teleport if controller missing
             owner.transform.position += dashDir * dashDistance;
         }
     }
