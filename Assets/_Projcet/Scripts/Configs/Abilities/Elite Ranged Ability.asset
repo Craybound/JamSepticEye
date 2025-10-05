@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b8721ac61d0d2c47b16b76cea3ab62a, type: 3}
   m_Name: Elite Ranged Ability
   m_EditorClassIdentifier: 
+  Icon: {fileID: 0}
   AbilityName: New Ability
+  Description: 
   projectilePrefab: {fileID: 6255541046891226340, guid: c817553b0c22e6d4ca6c60039411b6e1, type: 3}
   projectileDamage: 8
   projectileSpeed: 16
   projectileCooldown: 0.35
   enemyMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   aoePrefab: {fileID: 6040980892792489354, guid: eaed0af9c136d2b409855d2790032908, type: 3}
   aoeCooldown: 3
   groundMask:

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Sirenix.OdinInspector;
 
 /// <summary>
 /// Ground AoE that appears, waits (windup), then deals periodic damage in an area.
@@ -13,6 +14,9 @@ public class GroundAoeZone : MonoBehaviour
     [SerializeField] private float damagePerTick = 4f;
     [SerializeField] private float radius = 2.5f;
     [SerializeField] private LayerMask enemyMask;
+
+    [Title("Damage")]
+    [SerializeField] private float _damage = 5f;
 
     private void OnEnable() => StartCoroutine(Run());
 
@@ -34,7 +38,17 @@ public class GroundAoeZone : MonoBehaviour
                 tickTimer = 0f;
                 var hits = Physics.OverlapSphere(transform.position, radius, enemyMask, QueryTriggerInteraction.Ignore);
                 foreach (var h in hits)
-                    CombatUtils.TryDamage(h.gameObject, damagePerTick);
+                {
+                    h.TryGetComponent<EnemyController>(out EnemyController enemy);
+
+                    if (enemy != null)
+                    {
+                        enemy.TakeDamage((int)_damage);
+                    }
+
+
+                }
+                //CombatUtils.TryDamage(h.gameObject, damagePerTick);
             }
 
             yield return null;
@@ -42,5 +56,19 @@ public class GroundAoeZone : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            other.TryGetComponent<EnemyController>(out EnemyController enemy);
+
+
+
+            enemy.TakeDamage((int)_damage);
+        }
+    }
+
+
 }
 

@@ -81,6 +81,7 @@ public class EliteBruteAbility : AbilitySO
 
     public override void OnSecondary(GameObject owner)
     {
+
         if (_cdSecondary > 0f || _isCharging) return;
         var host = owner.GetComponent<MonoBehaviour>();
         if (host == null) return;
