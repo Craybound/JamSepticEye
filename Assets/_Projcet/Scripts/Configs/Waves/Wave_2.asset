@@ -14,4 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Enemies:
   - Config: {fileID: 11400000, guid: fceefe6f86cca074e802fee909d60b20, type: 2}
-    Count: 15
+    Count: 10
+  - Config: {fileID: 11400000, guid: ba167165d4960274bb47c616d159acaa, type: 2}
+    Count: 5
+  IsBossWave: 0
+  BossEnemy: {fileID: 0}
+  ReinforcementDelay: 10
