@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEngine.InputSystem;
 using System;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IDamageable
 {
     #region Runtime HUD
     [Title("Runtime Stats (Live Debug)", bold: true)]
@@ -82,13 +82,26 @@ public class EnemyController : MonoBehaviour
 
     private void Move()
     {
-        transform.LookAt(new Vector3(_player.transform.position.x, 0, _player.transform.position.z));
-        transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, MoveSpeed);
+        var playerPos = _player ? _player.transform.position : transform.position;
+        transform.LookAt(new Vector3(playerPos.x, transform.position.y, playerPos.z));
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            playerPos,
+            MoveSpeed * Time.deltaTime
+    );
     }
 
 
 
     #endregion
+
+    public bool IsAlive => _currentHealth > 0;
+
+    public void ApplyDamage(int amount, UnityEngine.Vector3 hitPoint, UnityEngine.Vector3 hitNormal)
+    {
+        if (!IsAlive || amount <= 0) return;
+        TakeDamage(amount);
+    }
 
     #region Combat
     public void TakeDamage(int amount)
