@@ -1,16 +1,19 @@
 using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    [Header("Player Stats")]
+    [SerializeField] private float _maxHealth = 100f;
+    [SerializeField, ReadOnly] private float _currentHealth;
 
-    [SerializeField] GameObject _player;
+    [SerializeField] private GameObject _player;
 
-
-
-    #region Singleton
     public static PlayerManager Instance { get; private set; }
     public static event Action<PlayerManager> OnReady;
+    public static event Action<float, float> OnHealthChanged; // current, max
+    public static event Action OnPlayerDeath;
 
     private void Awake()
     {
@@ -22,12 +25,13 @@ public class PlayerManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        OnReady?.Invoke(this);
-        _player = GameObject.FindWithTag("Player");
-    }
-    #endregion
 
-    #region Event Setup
+        _player = GameObject.FindWithTag("Player");
+        _currentHealth = _maxHealth;
+
+        OnReady?.Invoke(this);
+        OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+    }
 
     private void OnEnable()
     {
@@ -37,19 +41,42 @@ public class PlayerManager : MonoBehaviour
     private void OnDisable()
     {
         GameManager.OnStart -= Init;
-
     }
-
-    #endregion
 
     private void Init()
     {
-        _player.SetActive(true);
+        if (_player != null)
+            _player.SetActive(true);
     }
 
+    // === NEW ===
+    public void TakeDamage(int amount)
+    {
+        _currentHealth -= amount;
+        _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
 
+        Debug.Log($"[PlayerManager] Player took {amount} damage! Current HP: {_currentHealth}");
 
+        OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
 
+        if (_currentHealth <= 0)
+        {
+            Die();
+        }
+    }
 
+    public void Heal(float amount)
+    {
+        _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, _maxHealth);
+        OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+    }
 
+    private void Die()
+    {
+        Debug.Log("[PlayerManager] Player died!");
+        OnPlayerDeath?.Invoke();
+
+        // Add whatever you want to happen when player dies:
+        // e.g., GameManager.Instance.SetState(GameState.GameOver);
+    }
 }

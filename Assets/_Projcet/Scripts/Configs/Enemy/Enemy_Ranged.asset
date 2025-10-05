@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30ef62b6bb089214baf6c3d4f7793c93, type: 3}
   m_Name: Enemy_Ranged
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 6762921525803979716, guid: 3e526804d2c869a4fb99df08d4f33650, type: 3}
+  Prefab: {fileID: 5304247675355177937, guid: 64fc9ba1bf34b7b469f8189bc507353c, type: 3}
   Stats:
-    MaxHealth: 25
+    MaxHealth: 150
     Damage: 15
     MoveSpeed: 2.25
     SoulDrop: 1

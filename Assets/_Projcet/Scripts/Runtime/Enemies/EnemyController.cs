@@ -35,6 +35,18 @@ public class EnemyController : MonoBehaviour
     [ShowInInspector, ReadOnly, LabelText("Move Speed"), GUIColor(0.4f, 0.8f, 1f)]
     public float MoveSpeed => _runtimeStats.MoveSpeed;
 
+    [FoldoutGroup("Runtime HUD/Combat")]
+    [LabelText("Attack Range"), GUIColor(1f, 0.9f, 0.5f)]
+    public float AttackRange = 2f;
+
+    [FoldoutGroup("Runtime HUD/Combat")]
+    [LabelText("Attack Cooldown"), SuffixLabel("sec", Overlay = true)]
+    public float AttackCooldown = 1.5f;
+
+    private bool _canAttack = true;
+    #endregion
+
+    #region STAGGER
     [FoldoutGroup("Runtime HUD/Combat/Stagger", expanded: true)]
     [PreviewField(Alignment = ObjectFieldAlignment.Left, Height = 50)]
     [LabelText("Stagger Indicator")]
@@ -98,20 +110,17 @@ public class EnemyController : MonoBehaviour
         if (_agent == null)
             _agent = GetComponent<NavMeshAgent>();
 
-        // Handle initial stagger state
         if (_startStaggered)
         {
             state = EnemyState.Staggered;
             _agent.enabled = false;
-            _indicator.enabled = true;
+            if (_indicator != null) _indicator.enabled = true;
             IsInteractable = true;
         }
         else
         {
-
-            if(_indicator != null)
+            if (_indicator != null)
                 _indicator.enabled = false;
-
 
             state = EnemyState.Active;
             _agent.enabled = true;
@@ -124,7 +133,7 @@ public class EnemyController : MonoBehaviour
         switch (state)
         {
             case EnemyState.Active:
-                Move();
+                HandleActiveBehavior();
                 break;
 
             case EnemyState.Staggered:
@@ -144,20 +153,55 @@ public class EnemyController : MonoBehaviour
     }
     #endregion
 
-    #region === Movement ===
-    private void Move()
+    #region === Behavior ===
+    private void HandleActiveBehavior()
     {
         if (_player == null || _agent == null) return;
 
         float distance = Vector3.Distance(transform.position, _player.transform.position);
-        if (distance > 1.5f)
+
+        if (distance > AttackRange)
         {
-            _agent.SetDestination(_player.transform.position);
+            Move();
         }
         else
         {
             _agent.ResetPath();
+            TryAttack();
         }
+    }
+
+    private void Move()
+    {
+        _agent.SetDestination(_player.transform.position);
+    }
+
+    private void TryAttack()
+    {
+        if (!_canAttack) return;
+        StartCoroutine(AttackCoroutine());
+    }
+
+    private IEnumerator AttackCoroutine()
+    {
+        _canAttack = false;
+
+        // Optional: animation wind-up
+        yield return new WaitForSeconds(0.3f);
+
+        // Damage check if player is still in range
+        if (PlayerManager.Instance != null)
+        {
+            float distance = Vector3.Distance(transform.position, PlayerManager.Instance.transform.position);
+            if (distance <= AttackRange)
+            {
+                PlayerManager.Instance.TakeDamage(Damage);
+                Debug.Log($"[{name}] attacked player for {Damage} damage!");
+            }
+        }
+
+        yield return new WaitForSeconds(AttackCooldown);
+        _canAttack = true;
     }
     #endregion
 
@@ -177,25 +221,23 @@ public class EnemyController : MonoBehaviour
         if (_isStaggerCoroutineRunning) yield break;
         _isStaggerCoroutineRunning = true;
 
-        // If enemy started staggered, don't reset
         if (_startStaggered)
         {
-            _indicator.enabled = true;
+            if (_indicator != null) _indicator.enabled = true;
             IsInteractable = true;
             _agent.isStopped = true;
             _isStaggerCoroutineRunning = false;
             yield break;
         }
 
-        // Temporary stagger behavior
-        _indicator.enabled = true;
+        if (_indicator != null) _indicator.enabled = true;
         IsInteractable = true;
         _agent.isStopped = true;
         OnEnemyStagger?.Invoke();
 
         yield return new WaitForSeconds(_staggerCooldown);
 
-        _indicator.enabled = false;
+        if (_indicator != null) _indicator.enabled = false;
         _agent.isStopped = false;
         IsInteractable = false;
 
