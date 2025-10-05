@@ -24,7 +24,7 @@ public class WeaponHitbox : MonoBehaviour
         if (other.gameObject == _owner) return;
         if (!other.CompareTag(_targetTag)) return;
 
-        Debug.Log($"[Hitbox] {_owner.name} hit {other.name} for {_damage} damage!");
+        Debug.Log($"[Hitbox] hit {other.name} for {_damage} damage!");
         if (other.TryGetComponent(out EnemyController enemy))
             enemy.TakeDamage((int)_damage);
     }

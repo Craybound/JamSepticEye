@@ -17,7 +17,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (value.isPressed && _currentTarget != null)
         {
-            Debug.Log("Interacted");
+
             _currentTarget.Interact(gameObject);
         }
     }
