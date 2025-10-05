@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Elite Dasher Ability
   m_EditorClassIdentifier: 
   AbilityName: New Ability
-  meleeDamage: 10
+  meleeDamage: 20
   meleeRange: 1.5
   meleeCooldown: 1
   meleeHitDelay: 0.3

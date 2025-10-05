@@ -38,6 +38,9 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-4eb3e55cb1a1af147a1554e8a84805cd-1663718642-0
         - globalObjectIdString: GlobalObjectId_V1-2-4eb3e55cb1a1af147a1554e8a84805cd-1640648856-0
         - globalObjectIdString: GlobalObjectId_V1-2-4eb3e55cb1a1af147a1554e8a84805cd-1196322287-0
+        - globalObjectIdString: GlobalObjectId_V1-2-4eb3e55cb1a1af147a1554e8a84805cd-262501665-0
+        - globalObjectIdString: GlobalObjectId_V1-2-4eb3e55cb1a1af147a1554e8a84805cd-3544201502722836520-943606131
+        - globalObjectIdString: GlobalObjectId_V1-2-4eb3e55cb1a1af147a1554e8a84805cd-626630773-0
         values:
         - colorIndex: 5
           iconNameOrGuid: 
@@ -61,6 +64,18 @@ MonoBehaviour:
           isColorRecursive: 0
         - colorIndex: 9
           iconNameOrGuid: Camera Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 9
+          iconNameOrGuid: Camera Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 9
+          iconNameOrGuid: Camera Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 9
+          iconNameOrGuid: 
           isIconRecursive: 0
           isColorRecursive: 0
   bookmarks: []
