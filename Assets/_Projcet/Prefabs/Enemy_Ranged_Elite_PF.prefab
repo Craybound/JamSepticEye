@@ -204,7 +204,7 @@ MonoBehaviour:
   AttackRange: 3.5
   AttackCooldown: 1.5
   _indicator: {fileID: 3523120613114779236}
-  _startStaggered: 1
+  _startStaggered: 0
 --- !u!195 &7921373527350481033
 NavMeshAgent:
   m_ObjectHideFlags: 0
