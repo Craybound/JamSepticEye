@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/_Projcet/Art/Animation/Player/Player_Basic_Swing.anim.meta
 guid: 9c658b08a8960e14b85fad08df898626
+========
+guid: 45ee2bfe079bad540909d88971e41625
+>>>>>>>> Ability/Interaction-System-:Assets/_Projcet/Materials/Enemies.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 7400000

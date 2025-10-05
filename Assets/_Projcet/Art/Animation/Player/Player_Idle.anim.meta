@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/_Projcet/Art/Animation/Player/Player_Idle.anim.meta
 guid: 1a2e47263b0d131439edf28b52bd6fab
+========
+guid: 624a8e75700d91e4cb14bd41002c0dbf
+>>>>>>>> Ability/Interaction-System-:Assets/_Projcet/Materials/Eyes.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 7400000
