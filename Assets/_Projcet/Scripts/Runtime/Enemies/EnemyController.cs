@@ -97,7 +97,7 @@ public class EnemyController : MonoBehaviour
     private void Start()
     {
         state = EnemyState.Active;
-        if(_indicator != null)
+        if(_indicator != null && !IsInteractable)
            _indicator.enabled = false;
     }
     private void Update()
