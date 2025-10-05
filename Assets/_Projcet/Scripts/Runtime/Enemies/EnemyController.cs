@@ -171,6 +171,8 @@ public class EnemyController : MonoBehaviour
         if (_currentHealth <= 0) Die();
     }
 
+
+
     private void Attack()
     {
         if (Time.time > attackTimer)
@@ -180,7 +182,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void Die()
+    public void Die()
     {
         Debug.Log($"{name} died and dropped {_runtimeStats.SoulDrop} souls.");
         OnEnemyDeath?.Invoke(gameObject);
@@ -193,7 +195,7 @@ public class EnemyController : MonoBehaviour
     [InfoBox("Use these buttons in Play Mode to test interactions.")]
 
     [ButtonGroup("Debug/Combat"), GUIColor(1f, 0.4f, 0.4f)]
-    private void KillNow()
+    public void KillNow()
     {
         _currentHealth = 0;
         Die();
