@@ -70,37 +70,13 @@ public class EliteDasherAbility : AbilitySO
 
         // Initialize the hitbox for the attack (handled by animation events)
         var hitbox = owner.GetComponentInChildren<WeaponHitbox>();
+        Debug.Log(hitbox.name);
         if (hitbox != null)
             hitbox.Init(owner, meleeDamage);
 
-        // Optional fallback if no animation is set up (old coroutine-based damage check)
-        var host = owner.GetComponent<MonoBehaviour>();
-        if (host != null)
-            host.StartCoroutine(MeleeHitDelayed(owner));
     }
 
-    /// <summary>
-    /// Legacy fallback for hit timing if animation events aren't set up yet.
-    /// </summary>
-    private IEnumerator MeleeHitDelayed(GameObject owner)
-    {
-        yield return new WaitForSeconds(meleeHitDelay);
 
-        Vector3 origin = owner.transform.position + owner.transform.forward * meleeRange * 0.5f;
-        Collider[] hits = Physics.OverlapSphere(origin, meleeRange, enemyMask);
-
-        foreach (var hit in hits)
-        {
-            if (hit.CompareTag("Enemy"))
-            {
-                Debug.Log($"[Elite Dasher] Hit {hit.name} for {meleeDamage} damage!");
-                
-                hit.TryGetComponent<EnemyController>(out EnemyController enemy);
-                if (enemy != null)
-                    enemy.TakeDamage((int)meleeDamage);
-            }
-        }
-    }
     #endregion
 
 
@@ -118,24 +94,15 @@ public class EliteDasherAbility : AbilitySO
         _cooldownRight = dashCooldown;
         Debug.Log("[Elite Dasher] Dash started!");
 
-        // --- Determine dash direction (mouse-based aim) ---
-        Vector3 dashDir = owner.transform.forward;
-        Camera cam = Camera.main;
+        // --- NEW: read WASD movement direction (fallback to facing if idle)
+        Vector3 dashDir = owner.transform.forward; // fallback
+        var moveState = owner.GetComponent<PlayerMovementState>();
+        if (moveState != null && moveState.WorldMoveDir.sqrMagnitude > 1e-6f)
+            dashDir = moveState.WorldMoveDir;
 
-        if (cam != null)
-        {
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Ray ray = cam.ScreenPointToRay(mousePos);
+        dashDir.y = 0f;
+        if (dashDir.sqrMagnitude > 1f) dashDir.Normalize();
 
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
-            {
-                Vector3 target = hit.point;
-                target.y = owner.transform.position.y;
-                dashDir = (target - owner.transform.position).normalized;
-            }
-        }
-
-        // --- Execute dash ---
         var controller = owner.GetComponent<CharacterController>();
         var host = owner.GetComponent<MonoBehaviour>();
 
@@ -146,7 +113,6 @@ public class EliteDasherAbility : AbilitySO
         }
         else
         {
-            // Fallback: instant teleport if controller missing
             owner.transform.position += dashDir * dashDistance;
         }
     }

@@ -14,18 +14,24 @@ public class PlayerCharacterController : MonoBehaviour
 
     private Vector2 _moveInput;
     private float _yVel;
-
     private Camera _mainCam;
+    private PlayerMovementState _moveState;
 
     private void Awake()
     {
         if (_controller == null) _controller = GetComponent<CharacterController>();
         _mainCam = Camera.main;
+
+        _moveState = GetComponent<PlayerMovementState>();
+        if (_moveState == null) _moveState = gameObject.AddComponent<PlayerMovementState>();
     }
 
     // InputSystem callback
-    public void OnMove(InputValue value) => _moveInput = value.Get<Vector2>();
-
+    public void OnMove(InputValue value)
+    {
+        _moveInput = value.Get<Vector2>();
+        _moveState?.SetMoveInput(_moveInput);
+    }
     private void Update()
     {
         HandleMovement();

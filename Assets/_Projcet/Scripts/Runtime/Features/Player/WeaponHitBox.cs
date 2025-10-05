@@ -3,23 +3,20 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class WeaponHitbox : MonoBehaviour
 {
-    private Collider _collider;
+    [SerializeField] private Collider _collider;
     private float _damage;
     private string _targetTag = "Enemy";
-    private GameObject _owner;
+    [SerializeField] private GameObject _owner;
 
     private void Awake()
     {
         _collider = GetComponent<Collider>();
-        _collider.enabled = false;
-        _collider.isTrigger = true;
     }
 
     public void Init(GameObject owner, float damage, string targetTag = "Enemy")
     {
         _owner = owner;
         _damage = damage;
-        _targetTag = targetTag;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -28,7 +25,8 @@ public class WeaponHitbox : MonoBehaviour
         if (!other.CompareTag(_targetTag)) return;
 
         Debug.Log($"[Hitbox] {_owner.name} hit {other.name} for {_damage} damage!");
-        // TODO: call other.GetComponent<IDamageable>()?.TakeDamage(_damage);
+        if (other.TryGetComponent(out EnemyController enemy))
+            enemy.TakeDamage((int)_damage);
     }
 
     public void EnableHitbox() => _collider.enabled = true;
