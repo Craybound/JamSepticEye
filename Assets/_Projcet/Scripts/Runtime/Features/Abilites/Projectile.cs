@@ -30,16 +30,40 @@ public class Projectile : MonoBehaviour
         if (dist > 0f)
         {
             // Sweep forward this frame; include triggers
-            if (Physics.SphereCast(transform.position, hitRadius, dir.normalized, out var hit, dist, hitMask, QueryTriggerInteraction.Collide))
+            // Detect all enemies within a radius around current position
+            var hits = Physics.OverlapSphere(transform.position, hitRadius, hitMask, QueryTriggerInteraction.Collide);
+
+            bool hitSomething = false;
+
+            foreach (var h in hits)
             {
-                // Damage the thing we hit (root or child)
-                CombatUtils.TryDamage(hit.collider.gameObject, damage);
-
-                // Land at the hit point so VFX look right
-                transform.position = hit.point;
-
-                if (destroyOnHit) { Destroy(gameObject); return; }
+                // Try to find an enemy controller
+                if (h.TryGetComponent<EnemyController>(out EnemyController enemy))
+                {
+                    enemy.TakeDamage((int)damage);
+                    hitSomething = true;
+                }
+                else
+                {
+                    // Fallback: try damage utility if not an enemy
+                    CombatUtils.TryDamage(h.gameObject, damage);
+                    hitSomething = true;
+                }
             }
+
+            // Optional: if we hit anything, handle destruction or effects
+            if (hitSomething)
+            {
+                // Optional VFX position (stays where attack started, or you can move)
+                // transform.position = ???; // OverlapSphere doesn’t give a hit point, so skip or use nearest enemy.
+
+                if (destroyOnHit)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
+            }
+
         }
 
         transform.position = nextPos;
