@@ -2,11 +2,9 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
-using UnityEngine.UI;
-using NUnit.Framework;
+using UnityEngine.AI;
 
-public enum EnemyState { Active, Staggered }
-
+[RequireComponent(typeof(NavMeshAgent))]
 public class EnemyController : MonoBehaviour
 {
     #region Runtime HUD
@@ -85,7 +83,13 @@ public class EnemyController : MonoBehaviour
     public static event Action<GameObject> OnEnemyDeath;
     public event Action OnEnemyStagger;
 
+    
+    
     private GameObject _player;
+    private NavMeshAgent _agent;
+
+
+
 
     #endregion
 
@@ -96,6 +100,13 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
+        if (_player == null)
+            _player = GameObject.FindWithTag("Player");
+
+        if (_agent == null)
+            _agent = GetComponent<NavMeshAgent>();    
+
+
         state = EnemyState.Active;
         if(_indicator != null && !IsInteractable)
            _indicator.enabled = false;
@@ -134,9 +145,23 @@ public class EnemyController : MonoBehaviour
 
     private void Move()
     {
-        transform.LookAt(new Vector3(_player.transform.position.x, 0, _player.transform.position.z));
-        transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, MoveSpeed * Time.deltaTime);
+        if (_player == null || _agent == null)
+            return;
+
+        // Get distance between enemy and player
+        float distance = Vector3.Distance(transform.position, _player.transform.position);
+
+        // Optional: stop moving when close enough
+        if (distance > 1.5f)
+        {
+            _agent.SetDestination(_player.transform.position);
+        }
+        else
+        {
+            _agent.ResetPath(); // stop movement when within attack range
+        }
     }
+
 
     #endregion
 
@@ -157,11 +182,13 @@ public class EnemyController : MonoBehaviour
     {
         _indicator.enabled = true;
         IsInteractable = true;
+        _agent.isStopped = true;
         OnEnemyStagger?.Invoke();
 
         yield return new WaitForSeconds(_staggerCooldown);
 
         _indicator.enabled = false;
+        _agent.isStopped = false;
         IsInteractable = !IsInteractable;
         state = EnemyState.Active;
     }
