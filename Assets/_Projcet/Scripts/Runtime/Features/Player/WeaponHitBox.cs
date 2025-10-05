@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -33,13 +34,17 @@ public class WeaponHitbox : MonoBehaviour
             return;
 
         // --- Damage Handling ---
-        bool damaged = false;
-
         // Try damage via EnemyController
         if (other.TryGetComponent(out EnemyController enemy))
         {
-            enemy.TakeDamage((int)_damage);
-            damaged = true;
+            if (enemy.IsInteractable)
+            {
+                return;
+            }
+            else
+            {
+                enemy.TakeDamage((int)_damage);
+            }
         }
 
     }
