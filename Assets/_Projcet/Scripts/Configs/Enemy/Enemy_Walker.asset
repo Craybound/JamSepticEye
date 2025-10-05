@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30ef62b6bb089214baf6c3d4f7793c93, type: 3}
   m_Name: Enemy_Walker
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 6785743165886791569, guid: 41a7ce9b2963b85478f8420a72e42a43, type: 3}
+  Prefab: {fileID: 1756976714509694811, guid: 41a7ce9b2963b85478f8420a72e42a43, type: 3}
   Stats:
     MaxHealth: 50
     Damage: 10

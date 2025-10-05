@@ -2,10 +2,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using UnityEngine.InputSystem;
 using System;
-<<<<<<< HEAD
-=======
 using UnityEngine.AI;
->>>>>>> enemy
 
 public class EnemyController : MonoBehaviour
 {
@@ -83,12 +80,10 @@ public class EnemyController : MonoBehaviour
     private EnemyStats _runtimeStats;
     private int _currentHealth;
     #endregion
-
-<<<<<<< HEAD
+    
 
     public static event Action<GameObject> OnEnemyDeath;
-
-=======
+    
     private void Start()
     {
         SetTarget();
@@ -97,8 +92,7 @@ public class EnemyController : MonoBehaviour
         SetOffset();
     }
 
-    public static event Action<GameObject> OnEnemyDeath;
->>>>>>> enemy
+
     #region Unity Life Cycle
 
     private GameObject _player;
@@ -131,13 +125,6 @@ public class EnemyController : MonoBehaviour
 
     private void Move()
     {
-<<<<<<< HEAD
-        transform.LookAt(new Vector3(_player.transform.position.x, 0, _player.transform.position.z));
-        transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, MoveSpeed);
-    }
-
-
-=======
         if (target != null && Vector3.Distance(transform.position, target.position) >= attackRange)
         {
             Vector3 direction = (transform.position - target.position).normalized;
@@ -177,7 +164,6 @@ public class EnemyController : MonoBehaviour
             trueOffset = attackRange - targetOffset; // given default settings, this means the ranged enemy will always try to be about 4.5f away from the player
         }
     }
->>>>>>> enemy
 
     #endregion
 
