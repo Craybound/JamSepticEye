@@ -17,11 +17,8 @@ public class EliteDasherAbility : AbilitySO
     [Tooltip("Cooldown between melee attacks (seconds).")]
     [SerializeField] private float meleeCooldown = 1f;
 
-    [Tooltip("Delay before the hitbox becomes active (sync with animation).")]
+    [Tooltip("Delay between pressing attack and hit registering (to sync with animation).")]
     [SerializeField] private float meleeHitDelay = 0.3f;
-
-    [Tooltip("How long the hitbox stays active.")]
-    [SerializeField] private float hitboxActiveTime = 0.4f;
 
     [Tooltip("Enemy detection layer mask for melee hits.")]
     [SerializeField] private LayerMask enemyMask;
@@ -66,52 +63,20 @@ public class EliteDasherAbility : AbilitySO
         _cooldownLeft = meleeCooldown;
         Debug.Log("[Elite Dasher] Melee swing triggered!");
 
-        // --- Play Attack Animation ---
+        // Play attack animation if the player has an Animator
         var anim = owner.GetComponent<Animator>();
         if (anim != null)
             anim.SetTrigger("Attack");
 
-        // --- Get the Weapon Hitbox ---
-        var hitbox = owner.GetComponentInChildren<WeaponHitbox>(true);
+        // Initialize the hitbox for the attack (handled by animation events)
+        var hitbox = owner.GetComponentInChildren<WeaponHitbox>();
+        Debug.Log(hitbox.name);
         if (hitbox != null)
-        {
             hitbox.Init(owner, meleeDamage);
-        }
-        else
-        {
-            Debug.LogWarning("[Elite Dasher] No WeaponHitbox found on player!");
-            return;
-        }
 
-        // --- Use MonoBehaviour Host to Start Coroutine ---
-        MonoBehaviour host = owner.GetComponent<MonoBehaviour>();
-        if (host != null)
-        {
-            host.StartCoroutine(HandleMeleeHitbox(hitbox));
-        }
-        else
-        {
-            Debug.LogWarning("[Elite Dasher] No MonoBehaviour found on owner to run coroutine!");
-        }
     }
 
-    private IEnumerator HandleMeleeHitbox(WeaponHitbox hitbox)
-    {
-        // Ensure disabled before swing connects
-        hitbox.DisableHitbox();
 
-        // Wait for animation wind-up
-        yield return new WaitForSeconds(meleeHitDelay);
-
-        // Enable hitbox for active swing frames
-        hitbox.EnableHitbox();
-        Debug.Log("[Elite Dasher] Hitbox active!");
-
-        // Wait for the active time, then disable
-        yield return new WaitForSeconds(hitboxActiveTime);
-        hitbox.DisableHitbox();
-        Debug.Log("[Elite Dasher] Hitbox disabled.");
-    }
     #endregion
 
 
@@ -129,24 +94,15 @@ public class EliteDasherAbility : AbilitySO
         _cooldownRight = dashCooldown;
         Debug.Log("[Elite Dasher] Dash started!");
 
-        // --- Determine dash direction (mouse-based aim) ---
-        Vector3 dashDir = owner.transform.forward;
-        Camera cam = Camera.main;
+        // --- NEW: read WASD movement direction (fallback to facing if idle)
+        Vector3 dashDir = owner.transform.forward; // fallback
+        var moveState = owner.GetComponent<PlayerMovementState>();
+        if (moveState != null && moveState.WorldMoveDir.sqrMagnitude > 1e-6f)
+            dashDir = moveState.WorldMoveDir;
 
-        if (cam != null)
-        {
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Ray ray = cam.ScreenPointToRay(mousePos);
+        dashDir.y = 0f;
+        if (dashDir.sqrMagnitude > 1f) dashDir.Normalize();
 
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
-            {
-                Vector3 target = hit.point;
-                target.y = owner.transform.position.y;
-                dashDir = (target - owner.transform.position).normalized;
-            }
-        }
-
-        // --- Execute dash ---
         var controller = owner.GetComponent<CharacterController>();
         var host = owner.GetComponent<MonoBehaviour>();
 
@@ -157,7 +113,6 @@ public class EliteDasherAbility : AbilitySO
         }
         else
         {
-            // Fallback: instant teleport if controller missing
             owner.transform.position += dashDir * dashDistance;
         }
     }

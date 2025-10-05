@@ -12,17 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85acf9785ab72e74d8fe6e50958ac160, type: 3}
   m_Name: Elite Dasher Ability
   m_EditorClassIdentifier: 
-  Icon: {fileID: 0}
-  AbilityName: New Ability
-  Description: 
-  meleeDamage: 20
+  AbilityName: Elite Dasher Ability
+  meleeDamage: 10
   meleeRange: 1.5
   meleeCooldown: 1
   meleeHitDelay: 0.3
-  hitboxActiveTime: 0.8
   enemyMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   dashDistance: 5
   dashSpeed: 20
   dashCooldown: 2

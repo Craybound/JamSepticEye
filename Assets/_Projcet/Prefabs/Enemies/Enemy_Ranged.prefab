@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1466402851130575612}
   - component: {fileID: 6093642962250605272}
   - component: {fileID: 4660408861856362025}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Enemy_Ranged
   m_TagString: Ranged
   m_Icon: {fileID: 0}
@@ -124,11 +124,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e3aa546eff8b8448977cb17dffdd2b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  targetOffset: 1
-  attackRange: 5.5
-  attackSpeed: 0.75
-  attackTimer: 1
+  _indicator: {fileID: 0}
+  _startStaggered: 0
 --- !u!195 &4660408861856362025
 NavMeshAgent:
   m_ObjectHideFlags: 0

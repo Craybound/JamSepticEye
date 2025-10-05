@@ -159,6 +159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59981e3ecdb174c41a36f88e100606f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
   primaryAbility: {fileID: 11400000, guid: e7d2edb9645bc054ba337a00e6c24b5b, type: 2}
   secondaryAbility: {fileID: 11400000, guid: e7d2edb9645bc054ba337a00e6c24b5b, type: 2}
   pickupEffect: {fileID: 0}
@@ -251,7 +252,8 @@ GameObject:
   - component: {fileID: 1653593700368136297}
   - component: {fileID: 2562466933670546889}
   - component: {fileID: 115418113799224067}
-  m_Layer: 0
+  - component: {fileID: 3204393766420184990}
+  m_Layer: 6
   m_Name: Enemy_Dash_Boss_PF
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -364,3 +366,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _indicator: {fileID: 6573789968201877450}
+  _startStaggered: 0
+--- !u!195 &3204393766420184990
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8717202583660495619}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
