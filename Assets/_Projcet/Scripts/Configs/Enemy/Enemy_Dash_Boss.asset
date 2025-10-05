@@ -16,5 +16,9 @@ MonoBehaviour:
   Stats:
     MaxHealth: 100
     Damage: 25
+<<<<<<< HEAD
     MoveSpeed: 0.02
+=======
+    MoveSpeed: 4
+>>>>>>> enemy
     SoulDrop: 10

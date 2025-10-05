@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/_Projcet/Materials/Body.mat.meta
+guid: ccbfd9d7dfc68384fbfcc833452d7d86
+=======
+guid: ba167165d4960274bb47c616d159acaa
+>>>>>>> enemy:Assets/_Projcet/Scripts/Configs/Enemy/Enemy_Ranged.asset.meta
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30ef62b6bb089214baf6c3d4f7793c93, type: 3}
-  m_Name: Enemy_Walker
+  m_Name: Enemy_Ranged
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 6785743165886791569, guid: 41a7ce9b2963b85478f8420a72e42a43, type: 3}
+  Prefab: {fileID: 6762921525803979716, guid: 3e526804d2c869a4fb99df08d4f33650, type: 3}
   Stats:
-    MaxHealth: 50
-    Damage: 10
-    MoveSpeed: 2
+    MaxHealth: 25
+    Damage: 15
+    MoveSpeed: 2.25
     SoulDrop: 1

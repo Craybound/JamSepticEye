@@ -2,6 +2,10 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using UnityEngine.InputSystem;
 using System;
+<<<<<<< HEAD
+=======
+using UnityEngine.AI;
+>>>>>>> enemy
 
 public class EnemyController : MonoBehaviour
 {
@@ -38,8 +42,41 @@ public class EnemyController : MonoBehaviour
     [BoxGroup("Runtime HUD/Debug")]
     [ShowInInspector, ReadOnly, GUIColor(1f, 0.9f, 0.4f)]
     public float DamageMultiplier { get; private set; } = 1f;
-
+    
     private Color HealthBarColor => Color.Lerp(Color.red, Color.green, (float)_currentHealth / Mathf.Max(1, MaxHealth));
+    #endregion
+
+    #region Movement Vars
+    [Title("Movement Variables")]
+    [InfoBox("These values are for tracking movement.")]
+
+    [BoxGroup("Movement Variables/Transform")]
+    [ShowInInspector, ReadOnly]
+    public Transform target; // target var for object targeting
+
+    [BoxGroup("Movement Variables/Targeting")]
+    [ShowInInspector]
+    public float targetOffset = 1f; // adjustable offset for object targeting
+
+    [BoxGroup("Movement Variables/Targeting")]
+    [ShowInInspector, ReadOnly]
+    public float trueOffset; // actual offset for object targeting
+
+    [BoxGroup("Movement Variables/Targeting")]
+    [ShowInInspector, ReadOnly]
+    private NavMeshAgent agent; // NavMeshAgent var for movement
+
+    [BoxGroup("Movement Variables/Targeting")]
+    [ShowInInspector]
+    public float attackRange = 2f; // Attack range
+
+    [BoxGroup("Movement Variables/Attack")]
+    [ShowInInspector]
+    public float attackSpeed = 1f; // Generic attck speed / higher number means slower attack speed
+
+    [BoxGroup("Movement Variables/Attack")]
+    [ShowInInspector]
+    public float attackTimer = 1f; // Timer for next attack
     #endregion
 
     #region Private State
@@ -47,9 +84,21 @@ public class EnemyController : MonoBehaviour
     private int _currentHealth;
     #endregion
 
+<<<<<<< HEAD
 
     public static event Action<GameObject> OnEnemyDeath;
 
+=======
+    private void Start()
+    {
+        SetTarget();
+        agent = GetComponent<NavMeshAgent>(); // sets the agent var to the NavMeshAgent component
+        agent.speed = MoveSpeed;
+        SetOffset();
+    }
+
+    public static event Action<GameObject> OnEnemyDeath;
+>>>>>>> enemy
     #region Unity Life Cycle
 
     private GameObject _player;
@@ -82,11 +131,53 @@ public class EnemyController : MonoBehaviour
 
     private void Move()
     {
+<<<<<<< HEAD
         transform.LookAt(new Vector3(_player.transform.position.x, 0, _player.transform.position.z));
         transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, MoveSpeed);
     }
 
 
+=======
+        if (target != null && Vector3.Distance(transform.position, target.position) >= attackRange)
+        {
+            Vector3 direction = (transform.position - target.position).normalized;
+            Vector3 adjustedTarget = target.position + direction * trueOffset;
+            agent.SetDestination(adjustedTarget);
+        }
+        else if (target != null && Vector3.Distance(transform.position, target.position) <= attackRange)
+        {
+            Attack();
+        }
+    }
+
+    private void SetTarget()
+    {
+        if (target == null)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player"); // finds the player via tag
+            if (playerObject != null)
+            {
+                target = playerObject.transform; // sets player target to the previously found player tag
+            }
+            else
+            {
+                Debug.LogWarning("Player target not assigned and no object with 'Player' tag found.");
+            }
+        }
+    }
+
+    private void SetOffset()
+    {
+        if (this.tag == "Walker")
+        {
+            trueOffset = targetOffset; // given default settings, this means the walker will always try to be about 1f away from the player
+        }
+        else if (this.tag == "Ranged")
+        {
+            trueOffset = attackRange - targetOffset; // given default settings, this means the ranged enemy will always try to be about 4.5f away from the player
+        }
+    }
+>>>>>>> enemy
 
     #endregion
 
@@ -95,6 +186,15 @@ public class EnemyController : MonoBehaviour
     {
         _currentHealth -= amount;
         if (_currentHealth <= 0) Die();
+    }
+
+    private void Attack()
+    {
+        if (Time.time > attackTimer)
+        {
+            Debug.Log(this.name + " has attacked you!");
+            attackTimer = Time.time + attackSpeed;
+        }
     }
 
     private void Die()

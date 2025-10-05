@@ -4,7 +4,12 @@
 TagManager:
   serializedVersion: 3
   tags:
+<<<<<<< HEAD
   - Enemy
+=======
+  - Walker
+  - Ranged
+>>>>>>> enemy
   layers:
   - Default
   - TransparentFX
