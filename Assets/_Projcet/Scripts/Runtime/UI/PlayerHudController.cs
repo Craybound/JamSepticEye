@@ -44,6 +44,7 @@ public class PlayerHudController : MonoBehaviour
                 controller.SwapAbilities(primary, secondary);
                 enemy.Die();
                 _interactionUI.SetActive(false);
+
                 Time.timeScale = 1f; // Resume time after choosing
             });
         }

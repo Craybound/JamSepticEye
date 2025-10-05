@@ -70,7 +70,7 @@ public class EnemyController : MonoBehaviour
     [ShowInInspector, ReadOnly, LabelText("Damage Multiplier"), GUIColor(1f, 0.9f, 0.4f)]
     public float DamageMultiplier { get; private set; } = 1f;
     
-    private Color HealthBarColor => Color.Lerp(Color.red, Color.green, (float)_currentHealth / Mathf.Max(1, MaxHealth));
+    //private Color HealthBarColor => Color.Lerp(Color.red, Color.green, (float)_currentHealth / Mathf.Max(1, MaxHealth));
     #endregion
 
     #region Movement Vars
@@ -111,18 +111,8 @@ public class EnemyController : MonoBehaviour
     private int _currentHealth;
     #endregion
     
-
-    public static event Action<GameObject> OnEnemyDeath;
     
-    private void Start()
-    {
-        SetTarget();
-        agent = GetComponent<NavMeshAgent>(); // sets the agent var to the NavMeshAgent component
-        agent.speed = MoveSpeed;
-        SetOffset();
-    }
-
-
+    
     #region Unity Life Cycle
 
     #endregion
@@ -135,8 +125,6 @@ public class EnemyController : MonoBehaviour
 
     #region === Internal State ==============================
 
-    private EnemyStats _runtimeStats;
-    private int _currentHealth;
     public EnemyState state { get; private set; }
 
     public static event Action<GameObject> OnEnemyDeath;
@@ -153,10 +141,16 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
+        SetTarget();
+        agent = GetComponent<NavMeshAgent>(); // sets the agent var to the NavMeshAgent component
+        agent.speed = MoveSpeed;
+        SetOffset();
+
         state = EnemyState.Active;
-        if(_indicator != null && !IsInteractable)
-           _indicator.enabled = false;
+        if (_indicator != null && !IsInteractable)
+            _indicator.enabled = false;
     }
+
     private void Update()
     {
         switch (state)
