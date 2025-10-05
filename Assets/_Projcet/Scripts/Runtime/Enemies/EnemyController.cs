@@ -108,9 +108,13 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
+
+            if(_indicator != null)
+                _indicator.enabled = false;
+
+
             state = EnemyState.Active;
             _agent.enabled = true;
-            _indicator.enabled = false;
             IsInteractable = false;
         }
     }
