@@ -17,8 +17,11 @@ public class EliteDasherAbility : AbilitySO
     [Tooltip("Cooldown between melee attacks (seconds).")]
     [SerializeField] private float meleeCooldown = 1f;
 
-    [Tooltip("Delay between pressing attack and hit registering (to sync with animation).")]
+    [Tooltip("Delay before the hitbox becomes active (sync with animation).")]
     [SerializeField] private float meleeHitDelay = 0.3f;
+
+    [Tooltip("How long the hitbox stays active.")]
+    [SerializeField] private float hitboxActiveTime = 0.4f;
 
     [Tooltip("Enemy detection layer mask for melee hits.")]
     [SerializeField] private LayerMask enemyMask;
@@ -63,20 +66,52 @@ public class EliteDasherAbility : AbilitySO
         _cooldownLeft = meleeCooldown;
         Debug.Log("[Elite Dasher] Melee swing triggered!");
 
-        // Play attack animation if the player has an Animator
+        // --- Play Attack Animation ---
         var anim = owner.GetComponent<Animator>();
         if (anim != null)
             anim.SetTrigger("Attack");
 
-        // Initialize the hitbox for the attack (handled by animation events)
-        var hitbox = owner.GetComponentInChildren<WeaponHitbox>();
-        Debug.Log(hitbox.name);
+        // --- Get the Weapon Hitbox ---
+        var hitbox = owner.GetComponentInChildren<WeaponHitbox>(true);
         if (hitbox != null)
+        {
             hitbox.Init(owner, meleeDamage);
+        }
+        else
+        {
+            Debug.LogWarning("[Elite Dasher] No WeaponHitbox found on player!");
+            return;
+        }
 
+        // --- Use MonoBehaviour Host to Start Coroutine ---
+        MonoBehaviour host = owner.GetComponent<MonoBehaviour>();
+        if (host != null)
+        {
+            host.StartCoroutine(HandleMeleeHitbox(hitbox));
+        }
+        else
+        {
+            Debug.LogWarning("[Elite Dasher] No MonoBehaviour found on owner to run coroutine!");
+        }
     }
 
+    private IEnumerator HandleMeleeHitbox(WeaponHitbox hitbox)
+    {
+        // Ensure disabled before swing connects
+        hitbox.DisableHitbox();
 
+        // Wait for animation wind-up
+        yield return new WaitForSeconds(meleeHitDelay);
+
+        // Enable hitbox for active swing frames
+        hitbox.EnableHitbox();
+        Debug.Log("[Elite Dasher] Hitbox active!");
+
+        // Wait for the active time, then disable
+        yield return new WaitForSeconds(hitboxActiveTime);
+        hitbox.DisableHitbox();
+        Debug.Log("[Elite Dasher] Hitbox disabled.");
+    }
     #endregion
 
 

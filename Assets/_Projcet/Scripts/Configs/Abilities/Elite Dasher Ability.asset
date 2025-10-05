@@ -19,6 +19,7 @@ MonoBehaviour:
   meleeRange: 1.5
   meleeCooldown: 1
   meleeHitDelay: 0.3
+  hitboxActiveTime: 0.8
   enemyMask:
     serializedVersion: 2
     m_Bits: 64
