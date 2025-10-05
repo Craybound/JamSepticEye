@@ -129,36 +129,72 @@ public class EliteDasherAbility : AbilitySO
         _cooldownRight = dashCooldown;
         Debug.Log("[Elite Dasher] Dash started!");
 
-        // --- Determine dash direction (mouse-based aim) ---
-        Vector3 dashDir = owner.transform.forward;
-        Camera cam = Camera.main;
+<<<<<<< Updated upstream
+        // // --- Determine dash direction (mouse-based aim) ---
+        // Vector3 dashDir = owner.transform.forward;
+        // Camera cam = Camera.main;
 
-        if (cam != null)
-        {
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Ray ray = cam.ScreenPointToRay(mousePos);
+        // if (cam != null)
+        // {
+        //     Vector2 mousePos = Mouse.current.position.ReadValue();
+        //     Ray ray = cam.ScreenPointToRay(mousePos);
 
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
-            {
-                Vector3 target = hit.point;
-                target.y = owner.transform.position.y;
-                dashDir = (target - owner.transform.position).normalized;
-            }
-        }
+        //     if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+        //     {
+        //         Vector3 target = hit.point;
+        //         target.y = owner.transform.position.y;
+        //         dashDir = (target - owner.transform.position).normalized;
+        //     }
+        // }
+
+        // // --- Execute dash ---
+        // var controller = owner.GetComponent<CharacterController>();
+        // var host = owner.GetComponent<MonoBehaviour>();
+
+        // if (controller != null && host != null)
+        // {
+        //     host.StartCoroutine(DashCoroutine(controller, dashDir));
+        //     host.StartCoroutine(GrantIFrames(owner));
+        // }
+        // else
+        // {
+        //     // Fallback: instant teleport if controller missing
+        //     owner.transform.position += dashDir * dashDistance;
+        // }
+        
+        // --- Determine dash direction from movement state (WASD) ---
+        Vector3 dashDir = owner.transform.forward; // fallback
+        var moveState = owner.GetComponent<PlayerMovementState>();
+        if (moveState != null && moveState.WorldMoveDir.sqrMagnitude > 1e-6f)
+            dashDir = moveState.WorldMoveDir;
 
         // --- Execute dash ---
+=======
+        // --- NEW: read WASD movement direction (fallback to facing if idle)
+        Vector3 dashDir = owner.transform.forward; // fallback
+        var moveState = owner.GetComponent<PlayerMovementState>();
+        if (moveState != null && moveState.WorldMoveDir.sqrMagnitude > 1e-6f)
+            dashDir = moveState.WorldMoveDir;
+
+        dashDir.y = 0f;
+        if (dashDir.sqrMagnitude > 1f) dashDir.Normalize();
+
+>>>>>>> Stashed changes
         var controller = owner.GetComponent<CharacterController>();
         var host = owner.GetComponent<MonoBehaviour>();
 
         if (controller != null && host != null)
         {
-            host.StartCoroutine(DashCoroutine(controller, dashDir));
+            host.StartCoroutine(DashCoroutine(controller, dashDir.normalized));
             host.StartCoroutine(GrantIFrames(owner));
         }
         else
         {
-            // Fallback: instant teleport if controller missing
+<<<<<<< Updated upstream
+            owner.transform.position += dashDir.normalized * dashDistance;
+=======
             owner.transform.position += dashDir * dashDistance;
+>>>>>>> Stashed changes
         }
     }
 
