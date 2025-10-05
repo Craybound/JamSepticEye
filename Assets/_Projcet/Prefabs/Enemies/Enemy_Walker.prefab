@@ -124,6 +124,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e3aa546eff8b8448977cb17dffdd2b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AttackRange: 3
+  AttackCooldown: 1.5
   _indicator: {fileID: 0}
   _startStaggered: 0
 --- !u!195 &4282320564290919899

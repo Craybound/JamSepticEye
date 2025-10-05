@@ -39,7 +39,7 @@ public class WeaponHitbox : MonoBehaviour
         {
             if (enemy.IsInteractable)
             {
-                return;
+                return; 
             }
             else
             {
