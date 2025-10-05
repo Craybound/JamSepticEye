@@ -3074,8 +3074,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaf93cd8d5f0a424687119f8d9e6177c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _primaryAbility: {fileID: 11400000, guid: 6a92f42f61510cc41be2d9dc47131bfb, type: 2}
-  _secondaryAbility: {fileID: 11400000, guid: 6a92f42f61510cc41be2d9dc47131bfb, type: 2}
+  _primaryAbility: {fileID: 11400000, guid: 0bf54ff350e85df41a2eb9039db5e9f0, type: 2}
+  _secondaryAbility: {fileID: 11400000, guid: 0bf54ff350e85df41a2eb9039db5e9f0, type: 2}
 --- !u!114 &2136997449
 MonoBehaviour:
   m_ObjectHideFlags: 0

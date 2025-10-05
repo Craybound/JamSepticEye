@@ -1,52 +1,42 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class Projectile : MonoBehaviour
 {
-    [Header("Projectile Config")]
-    [SerializeField] private float speed = 15f;           
-    [SerializeField] private float lifeTime = 3f;         
-    [SerializeField] private float damage = 10f;          
-    [SerializeField] private LayerMask hitMask;           
-    [SerializeField] private float hitRadius = 0.15f;     // NEW: sweep radius
-    [SerializeField] private bool destroyOnHit = true;
+    [SerializeField] private float speed = 16f;
+    [SerializeField] private float lifeTime = 3f;
+    [SerializeField] private float damage = 8f;
+    [SerializeField] private LayerMask hitMask;
 
-    private float _timer;
-    private Vector3 _prevPos;
+    private float _t;
 
-    private void OnEnable()
+    private void Reset()
     {
-        _prevPos = transform.position;
+        var c = GetComponent<Collider>();
+        c.isTrigger = true;
     }
 
     private void Update()
     {
-        float dt = Time.deltaTime;
-        _timer += dt;
-        if (_timer >= lifeTime) { Destroy(gameObject); return; }
-
-        Vector3 nextPos = transform.position + transform.forward * speed * dt;
-        Vector3 dir = nextPos - transform.position;
-        float dist = dir.magnitude;
-        if (dist > 0f)
-        {
-            // Sweep forward this frame; include triggers
-            if (Physics.SphereCast(transform.position, hitRadius, dir.normalized, out var hit, dist, hitMask, QueryTriggerInteraction.Collide))
-            {
-                // Damage the thing we hit (root or child)
-                CombatUtils.TryDamage(hit.collider.gameObject, damage);
-
-                // Land at the hit point so VFX look right
-                transform.position = hit.point;
-
-                if (destroyOnHit) { Destroy(gameObject); return; }
-            }
-        }
-
-        transform.position = nextPos;
-        _prevPos = transform.position;
+        transform.position += transform.forward * (speed * Time.deltaTime);
+        _t += Time.deltaTime;
+        if (_t >= lifeTime) Destroy(gameObject);
     }
 
-    // Ability primes runtime config
+    private void OnTriggerEnter(Collider other)
+    {
+        if (((1 << other.gameObject.layer) & hitMask) == 0) return;
+
+        // Try typical enemy health paths
+        if (other.TryGetComponent(out EnemyController ec))
+            ec.TakeDamage(Mathf.RoundToInt(damage));
+        else if (other.TryGetComponent(out IDamageable id))
+            id.ApplyDamage(Mathf.RoundToInt(damage), other.ClosestPoint(transform.position), transform.forward);
+
+        Destroy(gameObject);
+    }
+
+    // Allow ability to set numbers at runtime
     public void Prime(float dmg, float spd, LayerMask mask)
     {
         damage = dmg; speed = spd; hitMask = mask;

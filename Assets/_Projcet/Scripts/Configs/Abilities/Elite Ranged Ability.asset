@@ -17,11 +17,18 @@ MonoBehaviour:
   projectileDamage: 8
   projectileSpeed: 16
   projectileCooldown: 0.35
+  muzzleLocalOffset: {x: 0, y: 0.6, z: 0.8}
   enemyMask:
     serializedVersion: 2
-    m_Bits: 0
-  aoePrefab: {fileID: 6040980892792489354, guid: eaed0af9c136d2b409855d2790032908, type: 3}
-  aoeCooldown: 3
+    m_Bits: 64
+  useMouseAimForPrimary: 1
   groundMask:
     serializedVersion: 2
     m_Bits: 256
+  aoePrefab: {fileID: 6040980892792489354, guid: eaed0af9c136d2b409855d2790032908, type: 3}
+  aoeWindup: 0.6
+  aoeDuration: 3
+  aoeTickInterval: 0.5
+  aoeDamagePerTick: 4
+  aoeRadius: 2.6
+  aoeCooldown: 3

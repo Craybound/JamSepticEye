@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8458027093822503822}
   - component: {fileID: 6040980892792489354}
   m_Layer: 0
-  m_Name: Cylinder
+  m_Name: GroundAoeZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

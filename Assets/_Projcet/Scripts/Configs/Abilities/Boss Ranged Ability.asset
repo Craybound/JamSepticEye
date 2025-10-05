@@ -14,14 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AbilityName: New Ability
   projectilePrefab: {fileID: 1354423354127201514, guid: d5eca9b2fc28e114b94390b0af4a22e2, type: 3}
-  damage: 10
-  speed: 20
-  pierces: 4
-  cooldown: 0.45
+  shotDamage: 10
+  shotSpeed: 22
+  shotPierces: 4
+  shotCooldown: 0.45
+  muzzleLocalOffset: {x: 0, y: 0.6, z: 0.9}
   enemyMask:
     serializedVersion: 2
     m_Bits: 64
-  volleyPrefab: {fileID: 1354423354127201514, guid: d5eca9b2fc28e114b94390b0af4a22e2, type: 3}
-  projectileCount: 5
-  spreadAngle: 25
+  useMouseAim: 1
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  volleyProjectilePrefab: {fileID: 1354423354127201514, guid: d5eca9b2fc28e114b94390b0af4a22e2, type: 3}
+  volleyCount: 5
+  volleySpread: 28
   volleyCooldown: 3.2
+  volleyDamage: 10
+  volleySpeed: 22
+  volleyPierces: 3
