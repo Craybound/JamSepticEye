@@ -166,7 +166,7 @@ public class EnemyController : MonoBehaviour
         state = EnemyState.Active;
     }
 
-    private void Die()
+    public void Die()
     {
         Debug.Log($"{name} died and dropped {_runtimeStats.SoulDrop} souls.");
         OnEnemyDeath?.Invoke(gameObject);

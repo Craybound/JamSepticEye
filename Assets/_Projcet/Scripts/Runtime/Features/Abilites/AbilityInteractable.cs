@@ -1,5 +1,7 @@
 using Sirenix.OdinInspector;
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class AbilityInteractable : MonoBehaviour, IInteractable
 {
@@ -14,6 +16,9 @@ public class AbilityInteractable : MonoBehaviour, IInteractable
     [SerializeField] private ParticleSystem pickupEffect;
     [SerializeField] private AudioClip pickupSound;
 
+
+    public static event Action<EnemyController,AbilitySO, AbilitySO> OnInteracted;
+
     void Start()
     {
         enemy = GetComponent<EnemyController>();
@@ -23,12 +28,10 @@ public class AbilityInteractable : MonoBehaviour, IInteractable
     public void Interact(GameObject interactor)
     {
         Debug.Log($"[Ability Interactable] {gameObject.name}");
-        var controller = interactor.GetComponent<PlayerAbilityController>();
-        if (controller == null) return;
 
         if (enemy.IsInteractable)
         {
-            controller.SwapAbilities(primaryAbility, secondaryAbility);
+            OnInteracted?.Invoke(enemy,GetPrimary(), GetSecondary());
         }
 
         Debug.Log($"[EliteDasherInteractable] {interactor.name} equipped " +
