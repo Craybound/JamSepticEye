@@ -7,7 +7,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyController : MonoBehaviour
 {
-    #region Runtime HUD
+    #region === Runtime HUD ===
 
     [FoldoutGroup("Runtime HUD", expanded: true)]
     [HideLabel, ShowInInspector, GUIColor(0.8f, 0.9f, 1f)]
@@ -15,8 +15,7 @@ public class EnemyController : MonoBehaviour
     private string _runtimeHeader = "Runtime Stats (Live Debug)";
     [InfoBox("These values are populated when the enemy spawns. You can tweak them in Play Mode for balancing.")]
 
-
-    #region === HEALTH ===
+    #region HEALTH
     [FoldoutGroup("Runtime HUD/Health", expanded: true)]
     [ShowInInspector, ProgressBar(0, nameof(MaxHealth), ColorGetter = nameof(HealthBarColor), Height = 20)]
     [LabelText("Current HP"), ReadOnly]
@@ -27,38 +26,36 @@ public class EnemyController : MonoBehaviour
     public int MaxHealth => _runtimeStats.MaxHealth;
     #endregion
 
-    #region === COMBAT ===
+    #region COMBAT
     [FoldoutGroup("Runtime HUD/Combat", expanded: true)]
-    [ShowInInspector, ReadOnly, LabelText("Damage"), GUIColor(1f, 0.7f, 0.2f), PropertyOrder(0)]
+    [ShowInInspector, ReadOnly, LabelText("Damage"), GUIColor(1f, 0.7f, 0.2f)]
     public int Damage => _runtimeStats.Damage;
 
     [FoldoutGroup("Runtime HUD/Combat")]
-    [ShowInInspector, ReadOnly, LabelText("Move Speed"), GUIColor(0.4f, 0.8f, 1f),PropertyOrder(1)]
+    [ShowInInspector, ReadOnly, LabelText("Move Speed"), GUIColor(0.4f, 0.8f, 1f)]
     public float MoveSpeed => _runtimeStats.MoveSpeed;
 
-
-    // === STAGGER (Subgroup under Combat) ===
     [FoldoutGroup("Runtime HUD/Combat/Stagger", expanded: true)]
-    [PreviewField(Alignment = ObjectFieldAlignment.Left, Height = 50), PropertyOrder(2)]
+    [PreviewField(Alignment = ObjectFieldAlignment.Left, Height = 50)]
     [LabelText("Stagger Indicator")]
     public UnityEngine.UI.Image _indicator;
 
     [FoldoutGroup("Runtime HUD/Combat/Stagger")]
-    [ShowInInspector, LabelText("Is Interactable"), GUIColor(0.8f, 1f, 0.6f), PropertyOrder(3)]
+    [ShowInInspector, LabelText("Is Interactable"), GUIColor(0.8f, 1f, 0.6f)]
     public bool IsInteractable { get; private set; } = false;
 
     [FoldoutGroup("Runtime HUD/Combat/Stagger")]
-    [ShowInInspector, LabelText("Stagger Cooldown"), SuffixLabel("sec", Overlay = true), GUIColor(1f, 0.9f, 0.5f), PropertyOrder(4)]
+    [ShowInInspector, LabelText("Stagger Cooldown"), SuffixLabel("sec", Overlay = true), GUIColor(1f, 0.9f, 0.5f)]
     public float _staggerCooldown { get; private set; } = 5f;
     #endregion
 
-    #region === LOOT ===
+    #region LOOT
     [FoldoutGroup("Runtime HUD/Loot", expanded: true)]
     [ShowInInspector, ReadOnly, LabelText("Soul Drop"), GUIColor(0.9f, 0.5f, 1f)]
     public int SoulDrop => _runtimeStats.SoulDrop;
     #endregion
 
-    #region === DEBUG ===
+    #region DEBUG
     [FoldoutGroup("Runtime HUD/Debug", expanded: false)]
     [ShowInInspector, ReadOnly, LabelText("Health Multiplier"), GUIColor(1f, 0.9f, 0.4f)]
     public float HealthMultiplier { get; private set; } = 1f;
@@ -68,34 +65,29 @@ public class EnemyController : MonoBehaviour
     public float DamageMultiplier { get; private set; } = 1f;
     #endregion
 
-    // === HEALTH BAR COLOR ===
     private Color HealthBarColor => Color.Lerp(Color.red, Color.green, (float)_currentHealth / Mathf.Max(1, MaxHealth));
 
     #endregion
 
-
-    #region === Internal State ==============================
-
+    #region === Internal State ===
     private EnemyStats _runtimeStats;
     private int _currentHealth;
     public EnemyState state { get; private set; }
 
-    public static event Action<GameObject> OnEnemyDeath;
-    public event Action OnEnemyStagger;
+    [FoldoutGroup("Runtime HUD/Debug")]
+    [ShowInInspector, SerializeField, LabelText("Start Staggered?"), Tooltip("If true, enemy starts in staggered (frozen/interactable) state.")]
+    private bool _startStaggered = false;
 
-    
-    
+    private bool _isStaggerCoroutineRunning = false;
+
     private GameObject _player;
     private NavMeshAgent _agent;
 
-
-
-
+    public static event Action<GameObject> OnEnemyDeath;
+    public event Action OnEnemyStagger;
     #endregion
 
-
-    #region === Unity Lifecycle ========================
-
+    #region === Unity Lifecycle ===
     private void Awake() => _player = GameObject.FindWithTag("Player");
 
     private void Start()
@@ -104,13 +96,25 @@ public class EnemyController : MonoBehaviour
             _player = GameObject.FindWithTag("Player");
 
         if (_agent == null)
-            _agent = GetComponent<NavMeshAgent>();    
+            _agent = GetComponent<NavMeshAgent>();
 
-
-        state = EnemyState.Active;
-        if(_indicator != null && !IsInteractable)
-           _indicator.enabled = false;
+        // Handle initial stagger state
+        if (_startStaggered)
+        {
+            state = EnemyState.Staggered;
+            _agent.enabled = false;
+            _indicator.enabled = true;
+            IsInteractable = true;
+        }
+        else
+        {
+            state = EnemyState.Active;
+            _agent.enabled = true;
+            _indicator.enabled = false;
+            IsInteractable = false;
+        }
     }
+
     private void Update()
     {
         switch (state)
@@ -124,12 +128,9 @@ public class EnemyController : MonoBehaviour
                 break;
         }
     }
-
     #endregion
 
-
-    #region === Initialization ========================
-
+    #region === Initialization ===
     public void Initialize(EnemyStats scaledStats, float hpMult = 1f, float dmgMult = 1f)
     {
         _runtimeStats = scaledStats;
@@ -137,37 +138,26 @@ public class EnemyController : MonoBehaviour
         HealthMultiplier = hpMult;
         DamageMultiplier = dmgMult;
     }
+    #endregion
 
-    #endregion===========
-
-
-    #region === Movement =====================
-
+    #region === Movement ===
     private void Move()
     {
-        if (_player == null || _agent == null)
-            return;
+        if (_player == null || _agent == null) return;
 
-        // Get distance between enemy and player
         float distance = Vector3.Distance(transform.position, _player.transform.position);
-
-        // Optional: stop moving when close enough
         if (distance > 1.5f)
         {
             _agent.SetDestination(_player.transform.position);
         }
         else
         {
-            _agent.ResetPath(); // stop movement when within attack range
+            _agent.ResetPath();
         }
     }
-
-
     #endregion
 
-
-    #region === Combat =======================
-
+    #region === Combat ===
     public void TakeDamage(int amount)
     {
         _currentHealth -= amount;
@@ -180,6 +170,20 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator EnemyStagger()
     {
+        if (_isStaggerCoroutineRunning) yield break;
+        _isStaggerCoroutineRunning = true;
+
+        // If enemy started staggered, don't reset
+        if (_startStaggered)
+        {
+            _indicator.enabled = true;
+            IsInteractable = true;
+            _agent.isStopped = true;
+            _isStaggerCoroutineRunning = false;
+            yield break;
+        }
+
+        // Temporary stagger behavior
         _indicator.enabled = true;
         IsInteractable = true;
         _agent.isStopped = true;
@@ -189,8 +193,10 @@ public class EnemyController : MonoBehaviour
 
         _indicator.enabled = false;
         _agent.isStopped = false;
-        IsInteractable = !IsInteractable;
+        IsInteractable = false;
+
         state = EnemyState.Active;
+        _isStaggerCoroutineRunning = false;
     }
 
     public void Die()
@@ -199,16 +205,13 @@ public class EnemyController : MonoBehaviour
         OnEnemyDeath?.Invoke(gameObject);
         Destroy(gameObject);
     }
-
     #endregion
 
-
-    #region Debug Tools
+    #region === Debug Tools ===
     [FoldoutGroup("Debug", expanded: true)]
     [HideLabel, ShowInInspector, DisplayAsString(false)]
     private readonly string _debugHeader = "Debug Tools";
 
-    // Buttons
     [FoldoutGroup("Debug/Combat")]
     [ButtonGroup("Debug/Combat/Actions"), GUIColor(1f, 0.4f, 0.4f)]
     private void KillNow()
@@ -234,7 +237,6 @@ public class EnemyController : MonoBehaviour
         OnEnemyStagger?.Invoke();
     }
 
-    // Override fields
     [FoldoutGroup("Debug/Overrides")]
     [ShowInInspector, GUIColor(1f, 0.7f, 0.2f)]
     [OnValueChanged(nameof(SetDamage))]
@@ -260,15 +262,5 @@ public class EnemyController : MonoBehaviour
 
     private void SetDamage() => Debug.Log($"{name}: Damage manually overridden to {_runtimeStats.Damage}");
     private void SetHealth() => Debug.Log($"{name}: MaxHealth manually overridden to {_runtimeStats.MaxHealth}");
-
-    public void Interact(GameObject interactor)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Vector3 GetPosition()
-    {
-        throw new NotImplementedException();
-    }
+    #endregion
 }
-#endregion}
