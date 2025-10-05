@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class AbilityInteractable : MonoBehaviour, IInteractable
 {
+
+    [SerializeField] private EnemyController enemy;
+
     [Title("Ability Set To Grant")]
     [SerializeField, Required] private AbilitySO primaryAbility;
     [SerializeField, Required] private AbilitySO secondaryAbility;
@@ -11,12 +14,22 @@ public class AbilityInteractable : MonoBehaviour, IInteractable
     [SerializeField] private ParticleSystem pickupEffect;
     [SerializeField] private AudioClip pickupSound;
 
+    void Start()
+    {
+        enemy = GetComponent<EnemyController>();
+    }
+
+
     public void Interact(GameObject interactor)
     {
+        Debug.Log($"[Ability Interactable] {gameObject.name}");
         var controller = interactor.GetComponent<PlayerAbilityController>();
         if (controller == null) return;
 
-        controller.SwapAbilities(primaryAbility, secondaryAbility);
+        if (enemy.IsInteractable)
+        {
+            controller.SwapAbilities(primaryAbility, secondaryAbility);
+        }
 
         Debug.Log($"[EliteDasherInteractable] {interactor.name} equipped " +
                   $"{primaryAbility?.name} + {secondaryAbility?.name}");
@@ -29,6 +42,9 @@ public class AbilityInteractable : MonoBehaviour, IInteractable
     }
 
     public Vector3 GetPosition() => transform.position;
+
+    public AbilitySO GetPrimary() => primaryAbility;
+    public AbilitySO GetSecondary() => secondaryAbility; 
 
 
 

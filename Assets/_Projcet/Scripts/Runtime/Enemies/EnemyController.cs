@@ -2,55 +2,81 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
+using UnityEngine.UI;
+using NUnit.Framework;
 
 public enum EnemyState { Active, Staggered }
 
 public class EnemyController : MonoBehaviour
 {
-    #region ??? Runtime HUD ?????????????????????????????????????????????
+    #region Runtime HUD
 
-    [Title("Runtime Stats (Live Debug)", bold: true)]
+    [FoldoutGroup("Runtime HUD", expanded: true)]
+    [HideLabel, ShowInInspector, GUIColor(0.8f, 0.9f, 1f)]
+    [DisplayAsString(false)]
+    private string _runtimeHeader = "Runtime Stats (Live Debug)";
     [InfoBox("These values are populated when the enemy spawns. You can tweak them in Play Mode for balancing.")]
 
-    [BoxGroup("Health")]
+
+    #region === HEALTH ===
+    [FoldoutGroup("Runtime HUD/Health", expanded: true)]
     [ShowInInspector, ProgressBar(0, nameof(MaxHealth), ColorGetter = nameof(HealthBarColor), Height = 20)]
-    [ReadOnly]
+    [LabelText("Current HP"), ReadOnly]
     public int CurrentHealth => _currentHealth;
 
-    [BoxGroup("Health")]
-    [ShowInInspector, ReadOnly, GUIColor(0.6f, 1f, 0.6f)]
+    [FoldoutGroup("Runtime HUD/Health")]
+    [ShowInInspector, ReadOnly, LabelText("Max HP"), GUIColor(0.6f, 1f, 0.6f)]
     public int MaxHealth => _runtimeStats.MaxHealth;
+    #endregion
 
-    [BoxGroup("Combat")]
-    [ShowInInspector, ReadOnly, GUIColor(1f, 0.7f, 0.2f)]
+    #region === COMBAT ===
+    [FoldoutGroup("Runtime HUD/Combat", expanded: true)]
+    [ShowInInspector, ReadOnly, LabelText("Damage"), GUIColor(1f, 0.7f, 0.2f), PropertyOrder(0)]
     public int Damage => _runtimeStats.Damage;
 
-    [BoxGroup("Combat")]
-    [ShowInInspector, ReadOnly, GUIColor(0.4f, 0.8f, 1f)]
+    [FoldoutGroup("Runtime HUD/Combat")]
+    [ShowInInspector, ReadOnly, LabelText("Move Speed"), GUIColor(0.4f, 0.8f, 1f),PropertyOrder(1)]
     public float MoveSpeed => _runtimeStats.MoveSpeed;
 
-    [BoxGroup("Combat")]
-    [ShowInInspector, GUIColor(0.4f, 0.8f, 1f)]
+
+    // === STAGGER (Subgroup under Combat) ===
+    [FoldoutGroup("Runtime HUD/Combat/Stagger", expanded: true)]
+    [PreviewField(Alignment = ObjectFieldAlignment.Left, Height = 50), PropertyOrder(2)]
+    [LabelText("Stagger Indicator")]
+    public UnityEngine.UI.Image _indicator;
+
+    [FoldoutGroup("Runtime HUD/Combat/Stagger")]
+    [ShowInInspector, LabelText("Is Interactable"), GUIColor(0.8f, 1f, 0.6f), PropertyOrder(3)]
+    public bool IsInteractable { get; private set; } = false;
+
+    [FoldoutGroup("Runtime HUD/Combat/Stagger")]
+    [ShowInInspector, LabelText("Stagger Cooldown"), SuffixLabel("sec", Overlay = true), GUIColor(1f, 0.9f, 0.5f), PropertyOrder(4)]
     public float _staggerCooldown { get; private set; } = 5f;
+    #endregion
 
-    [BoxGroup("Loot")]
-    [ShowInInspector, ReadOnly, GUIColor(0.9f, 0.5f, 1f)]
+    #region === LOOT ===
+    [FoldoutGroup("Runtime HUD/Loot", expanded: true)]
+    [ShowInInspector, ReadOnly, LabelText("Soul Drop"), GUIColor(0.9f, 0.5f, 1f)]
     public int SoulDrop => _runtimeStats.SoulDrop;
+    #endregion
 
-    [BoxGroup("Debug")]
-    [ShowInInspector, ReadOnly, GUIColor(1f, 0.9f, 0.4f)]
+    #region === DEBUG ===
+    [FoldoutGroup("Runtime HUD/Debug", expanded: false)]
+    [ShowInInspector, ReadOnly, LabelText("Health Multiplier"), GUIColor(1f, 0.9f, 0.4f)]
     public float HealthMultiplier { get; private set; } = 1f;
 
-    [BoxGroup("Debug")]
-    [ShowInInspector, ReadOnly, GUIColor(1f, 0.9f, 0.4f)]
+    [FoldoutGroup("Runtime HUD/Debug")]
+    [ShowInInspector, ReadOnly, LabelText("Damage Multiplier"), GUIColor(1f, 0.9f, 0.4f)]
     public float DamageMultiplier { get; private set; } = 1f;
+    #endregion
 
+    // === HEALTH BAR COLOR ===
     private Color HealthBarColor => Color.Lerp(Color.red, Color.green, (float)_currentHealth / Mathf.Max(1, MaxHealth));
 
     #endregion
 
 
-    #region ??? Internal State ?????????????????????????????????????????????
+    #region === Internal State ==============================
 
     private EnemyStats _runtimeStats;
     private int _currentHealth;
@@ -64,12 +90,16 @@ public class EnemyController : MonoBehaviour
     #endregion
 
 
-    #region ??? Unity Lifecycle ?????????????????????????????????????????????
+    #region === Unity Lifecycle ========================
 
     private void Awake() => _player = GameObject.FindWithTag("Player");
 
-    private void Start() => state = EnemyState.Active;
-
+    private void Start()
+    {
+        state = EnemyState.Active;
+        if(_indicator != null)
+           _indicator.enabled = false;
+    }
     private void Update()
     {
         switch (state)
@@ -87,7 +117,7 @@ public class EnemyController : MonoBehaviour
     #endregion
 
 
-    #region ??? Initialization ?????????????????????????????????????????????
+    #region === Initialization ========================
 
     public void Initialize(EnemyStats scaledStats, float hpMult = 1f, float dmgMult = 1f)
     {
@@ -97,10 +127,10 @@ public class EnemyController : MonoBehaviour
         DamageMultiplier = dmgMult;
     }
 
-    #endregion
+    #endregion===========
 
 
-    #region ??? Movement ?????????????????????????????????????????????
+    #region === Movement =====================
 
     private void Move()
     {
@@ -111,7 +141,7 @@ public class EnemyController : MonoBehaviour
     #endregion
 
 
-    #region ??? Combat ?????????????????????????????????????????????
+    #region === Combat =======================
 
     public void TakeDamage(int amount)
     {
@@ -125,8 +155,14 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator EnemyStagger()
     {
+        _indicator.enabled = true;
+        IsInteractable = true;
         OnEnemyStagger?.Invoke();
+
         yield return new WaitForSeconds(_staggerCooldown);
+
+        _indicator.enabled = false;
+        IsInteractable = !IsInteractable;
         state = EnemyState.Active;
     }
 
@@ -140,33 +176,38 @@ public class EnemyController : MonoBehaviour
     #endregion
 
 
-    #region ??? Debug Tools ?????????????????????????????????????????????
+    #region Debug Tools
+    [FoldoutGroup("Debug", expanded: true)]
+    [HideLabel, ShowInInspector, DisplayAsString(false)]
+    private readonly string _debugHeader = "Debug Tools";
 
-    [Title("Debug Tools", bold: true)]
-    [ButtonGroup("Debug/Combat"), GUIColor(1f, 0.4f, 0.4f)]
+    // Buttons
+    [FoldoutGroup("Debug/Combat")]
+    [ButtonGroup("Debug/Combat/Actions"), GUIColor(1f, 0.4f, 0.4f)]
     private void KillNow()
     {
         _currentHealth = 0;
         Die();
     }
 
-    [ButtonGroup("Debug/Combat"), GUIColor(0.4f, 1f, 0.4f)]
+    [FoldoutGroup("Debug/Combat")]
+    [ButtonGroup("Debug/Combat/Actions"), GUIColor(0.4f, 1f, 0.4f)]
     private void HealFull() => _currentHealth = _runtimeStats.MaxHealth;
 
-    [ButtonGroup("Debug/Combat"), GUIColor(1f, 0.9f, 0.4f)]
+    [FoldoutGroup("Debug/Combat")]
+    [ButtonGroup("Debug/Combat/Actions"), GUIColor(1f, 0.9f, 0.4f)]
     private void DamageSelf(int amount = 10) => TakeDamage(amount);
 
-    [ButtonGroup("Debug/Combat"), GUIColor(0.4f, 1f, 0.4f)]
+    [FoldoutGroup("Debug/Combat")]
+    [ButtonGroup("Debug/Combat/Actions"), GUIColor(0.4f, 1f, 0.4f)]
     private void StaggerSelf()
     {
         _currentHealth = Mathf.RoundToInt(MaxHealth * 0.1f);
+        StartCoroutine(EnemyStagger());
         OnEnemyStagger?.Invoke();
     }
 
-    [FoldoutGroup("Debug/Overrides"), GUIColor(0.6f, 0.8f, 1f)]
-    [Button("Reset To Defaults")]
-    private void ResetStats() => _currentHealth = _runtimeStats.MaxHealth;
-
+    // Override fields
     [FoldoutGroup("Debug/Overrides")]
     [ShowInInspector, GUIColor(1f, 0.7f, 0.2f)]
     [OnValueChanged(nameof(SetDamage))]
@@ -185,12 +226,22 @@ public class EnemyController : MonoBehaviour
         set
         {
             _runtimeStats.MaxHealth = Mathf.Max(1, value);
-            _currentHealth = Mathf.Min(_currentHealth, _runtimeStats.MaxHealth);
+            if (_currentHealth > _runtimeStats.MaxHealth)
+                _currentHealth = _runtimeStats.MaxHealth;
         }
     }
 
     private void SetDamage() => Debug.Log($"{name}: Damage manually overridden to {_runtimeStats.Damage}");
     private void SetHealth() => Debug.Log($"{name}: MaxHealth manually overridden to {_runtimeStats.MaxHealth}");
 
-    #endregion
+    public void Interact(GameObject interactor)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Vector3 GetPosition()
+    {
+        throw new NotImplementedException();
+    }
 }
+#endregion}

@@ -282,6 +282,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 111841521}
   m_CullTransparentMesh: 1
+--- !u!1 &125140096 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8717202583660495619, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
+  m_PrefabInstance: {fileID: 1591477886}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &125140102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 125140096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59981e3ecdb174c41a36f88e100606f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 0}
+  primaryAbility: {fileID: 11400000, guid: e7d2edb9645bc054ba337a00e6c24b5b, type: 2}
+  secondaryAbility: {fileID: 11400000, guid: e7d2edb9645bc054ba337a00e6c24b5b, type: 2}
+  pickupEffect: {fileID: 0}
+  pickupSound: {fileID: 0}
 --- !u!1 &261909733
 GameObject:
   m_ObjectHideFlags: 0
@@ -1596,7 +1618,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7929275513538307722, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
+    - target: {fileID: 1424877863455042669, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2092504376207228947, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -1605,9 +1631,13 @@ PrefabInstance:
       value: Enemy_Dash_Boss_PF
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2092504376207228947, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8717202583660495619, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 125140102}
   m_SourcePrefab: {fileID: 100100000, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
 --- !u!1 &1642435401
 GameObject:
