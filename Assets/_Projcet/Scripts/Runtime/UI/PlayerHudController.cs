@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // use TMP if you prefer
+using TMPro;
 
 public class PlayerHudController : MonoBehaviour
 {
