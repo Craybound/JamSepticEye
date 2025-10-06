@@ -15,6 +15,9 @@ MonoBehaviour:
   Icon: {fileID: 0}
   AbilityName: New Ability
   Description: 
+  audio: {fileID: 0}
+  primarySfx: {fileID: 8300000, guid: bb4a299d23594e94f98778c3d514816a, type: 3}
+  secondarySfx: {fileID: 8300000, guid: 67367aa59f19df347b7a407d87047ea6, type: 3}
   projectilePrefab: {fileID: 6255541046891226340, guid: c817553b0c22e6d4ca6c60039411b6e1, type: 3}
   projectileDamage: 30
   projectileSpeed: 16
