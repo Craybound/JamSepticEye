@@ -25,6 +25,7 @@ public class PlayerAbilityController : MonoBehaviour
         {
             Debug.Log("[Input] Primary fired!");
             _primaryAbility?.OnPrimary(gameObject);
+            _primaryAbility.audio.PlayOneShot(_primaryAbility.primarySfx, 0.7f);
         }
     }
 
@@ -34,6 +35,7 @@ public class PlayerAbilityController : MonoBehaviour
         {
             Debug.Log("[Input] Secondary fired!");
             _secondaryAbility?.OnSecondary(gameObject);
+            _secondaryAbility.audio.PlayOneShot(_secondaryAbility.secondarySfx, 0.7f);
         }
     }
 
