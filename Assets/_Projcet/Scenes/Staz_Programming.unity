@@ -1838,6 +1838,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -0.0000001937151
       objectReference: {fileID: 0}
+    - target: {fileID: 3858489988099469566, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
+      propertyPath: healthBar
+      value: 
+      objectReference: {fileID: 648441515}
     - target: {fileID: 4040450016009189245, guid: 4da7d3039e3ebb84894a8000c4e91381, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.49127078
