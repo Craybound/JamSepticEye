@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Elite Dasher Ability
   m_EditorClassIdentifier: 
   Icon: {fileID: 0}
-  AbilityName: Elite Dasher Ability
-  Description: 
-  audio: {fileID: 0}
+  AbilityName: Dash
+  Description: Quickly move in the direction of your mouse
   primarySfx: {fileID: 8300000, guid: 5f6876bcb6c4d3f448dc819d4c0ffba1, type: 3}
   secondarySfx: {fileID: 8300000, guid: 37c20fe68fc44b64695c27b48d672803, type: 3}
   meleeDamage: 20
