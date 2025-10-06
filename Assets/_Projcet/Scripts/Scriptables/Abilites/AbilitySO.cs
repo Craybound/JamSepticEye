@@ -12,7 +12,7 @@ public abstract class AbilitySO : ScriptableObject
     public string Description;
 
 
-    public AudioSource audio;
+    
     public AudioClip primarySfx;
     public AudioClip secondarySfx;
 
