@@ -9,6 +9,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField, ReadOnly] private float _currentHealth;
 
     [SerializeField] private GameObject _player;
+    [SerializeField] public HealthBarController healthBar;
 
     public static PlayerManager Instance { get; private set; }
     public static event Action<PlayerManager> OnReady;
@@ -28,6 +29,7 @@ public class PlayerManager : MonoBehaviour
 
         _player = GameObject.FindWithTag("Player");
         _currentHealth = _maxHealth;
+        healthBar.SetMaxHealth(_maxHealth);
 
         OnReady?.Invoke(this);
         OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
@@ -54,6 +56,7 @@ public class PlayerManager : MonoBehaviour
     {
         _currentHealth -= amount;
         _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
+        healthBar.SetHealth(_currentHealth);
 
         Debug.Log($"[PlayerManager] Player took {amount} damage! Current HP: {_currentHealth}");
 
@@ -69,6 +72,7 @@ public class PlayerManager : MonoBehaviour
     {
         _currentHealth = Mathf.Clamp(_currentHealth + amount, 0, _maxHealth);
         OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
+        healthBar.SetHealth(_currentHealth);
     }
 
     private void Die()
