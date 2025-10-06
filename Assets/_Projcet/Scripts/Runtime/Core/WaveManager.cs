@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WaveManager : MonoBehaviour
 {
@@ -45,9 +46,9 @@ public class WaveManager : MonoBehaviour
     [Title("Spawn Settings")]
     [InfoBox("Points in the scene where enemies can spawn. One is chosen at random.")]
     [SerializeField] private List<Transform> _spawnPoints = new();
-   
 
 
+    [SerializeField] private string _sceneName;
 
     
     
@@ -132,6 +133,9 @@ public class WaveManager : MonoBehaviour
         if (_currentWave >= _waves.Count)
         {
             Debug.Log("[WaveManager] No more waves defined.");
+
+            if(_sceneName != null)
+            SceneManager.LoadScene(_sceneName);
             return;
         }
 

@@ -1970,6 +1970,7 @@ MonoBehaviour:
   - {fileID: 1453166935}
   - {fileID: 435573614}
   - {fileID: 1405746615}
+  _sceneName: ThankYouScene
   _timeScale: 15
   _damagePerWave: 0.08
   _healthPerWave: 0.08
