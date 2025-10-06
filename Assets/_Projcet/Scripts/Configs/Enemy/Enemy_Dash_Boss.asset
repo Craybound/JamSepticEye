@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Prefab: {fileID: 8717202583660495619, guid: c92d9291bb25be54c9d890dd7f874478, type: 3}
   Stats:
-    MaxHealth: 120
+    MaxHealth: 150
     Damage: 20
     MoveSpeed: 3
     SoulDrop: 10
