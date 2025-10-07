@@ -29,6 +29,8 @@ public class PlayerManager : MonoBehaviour
 
         _player = GameObject.FindWithTag("Player");
         _currentHealth = _maxHealth;
+
+        if (healthBar != null)
         healthBar.SetMaxHealth(_maxHealth);
 
         OnReady?.Invoke(this);

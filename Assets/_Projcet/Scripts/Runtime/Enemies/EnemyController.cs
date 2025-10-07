@@ -113,7 +113,6 @@ public class EnemyController : MonoBehaviour
         if (_startStaggered)
         {
             state = EnemyState.Staggered;
-            _agent.enabled = false;
             if (_indicator != null) _indicator.enabled = true;
             IsInteractable = true;
         }
@@ -225,7 +224,10 @@ public class EnemyController : MonoBehaviour
         {
             if (_indicator != null) _indicator.enabled = true;
             IsInteractable = true;
-            _agent.isStopped = true;
+
+
+            if(_agent != null && !_agent.isStopped)
+                _agent.isStopped = true;
             _isStaggerCoroutineRunning = false;
             yield break;
         }
